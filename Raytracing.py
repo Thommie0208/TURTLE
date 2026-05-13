@@ -50,3 +50,39 @@ from raytracing import *
 ### y is de hoogte van de ray tov van de optische as
 ### theta is de hoek van de ray
 ### z is de horizontale afstand, is in deze code 50, want Space(20) + Space(30) = 50
+
+### objective ###
+# obj = Objective(f=10, NA=0.8, focusToFocusLength=60, backAperture=18, workingDistance=2, magnification=40, fieldNumber=1.4, label="Objective")
+# path = ImagingPath()
+# path.label = "Path with generic objective"
+# path.append(Space(d=180))
+# path.append(obj)
+# path.append(Space(d=10))
+# path.displayWithObject(diameter=20, fanAngle=0.005)
+
+### thorlabs lens ###
+# path = ImagingPath()
+# path.append(Space(d=50))
+# path.append(thorlabs.AC127_050_A())
+# path.append(Space(d=75))
+# path.display()
+
+### OpenFlexure ### vgm?????????????????
+focal = 4 #mm
+NumericalAperture = 0.65
+n = 1.0003 #refractive index van air
+WorkingDistance = 0.6 #mm
+
+back_aperture = 2*focal*NumericalAperture/n
+
+obj_OpenFlexure = Objective(f=focal, NA = NumericalAperture, focusToFocusLength = focal+WorkingDistance, backAperture = back_aperture, 
+                            workingDistance = WorkingDistance, 
+                            magnification=40, label='Objective')
+path = ImagingPath()
+path.label = "Path with generic objective"
+path.append(Space(d=4))
+path.append(obj_OpenFlexure)
+path.append(Space(d=160))
+path.append(thorlabs.AC127_050_A())
+path.append(Space(d=150))
+path.displayWithObject(diameter=20, fanAngle=0.005)
