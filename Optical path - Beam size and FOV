@@ -7,11 +7,11 @@ import numpy as np
 
 ### Variables
 #camera
-pixles = np.array([800, 600])     #... - The resolution of the camera as in ... x ... (the order of input does not matter) (800 x 600)(1456 x 1088)(3072 x 2048)(1600 x 1200, not enough clearance)
-pixle_size = 4.8                  #micrometer - The pixle size of the camera (4.8)(3.45)(2.4)(4.5 not enough clearance)
+pixles = np.array([3072, 2048])     #... - The resolution of the camera as in ... x ... (the order of input does not matter) (800 x 600)(1456 x 1088)(3072 x 2048)(1600 x 1200, not enough clearance)
+pixle_size = 2.4                  #micrometer - The pixle size of the camera (4.8)(3.45)(2.4)(4.5 not enough clearance)
 
 #lenses
-M_obj = 4           #... - Magnification of the objective (4)(10)
+M_obj = 4          #... - Magnification of the objective (4)(10)
 NA_obj = 0.13       #... - Numerical aperature of the objective (0.13)(0.3)
 WD_obj = 17         #mm - Working distance of the objective (17)(9)
 f_tube_corr = 180   #mm - Focal length of the corresponding tube lens (the tube lens from the same company as the objective)
@@ -77,7 +77,8 @@ h_max_phi_lens = np.arctan((d_imaging - d_pup) / (2 * (L_1 + L_2 + L_3)))
 
 h_max_phi = np.array([h_max_phi_m1, h_max_phi_m2, h_max_phi_dich, h_max_phi_filter, h_max_phi_lens])
 h_phi_crit = np.min(h_max_phi)
-h_FOV_crit = 2 * WD_obj * np.tan(h_phi_crit)    #mm
+h_FOV_crit = 2 * f_obj * np.tan(h_phi_crit)
+#h_FOV_crit = 2 * WD_obj * np.tan(h_phi_crit)    #mm  (old method)
 
 # maximum width FOV (dependent on the mirror angle and at this point a mirror angle of 45 deg is assumed)
 w_m1 = d_m1 - 2 * w_mg - 2 * h_mg
@@ -93,11 +94,15 @@ w_max_phi_lens = np.arctan((d_imaging - d_pup) / (2 * (L_1 + L_2 + L_3)))
 
 w_max_phi = np.array([w_max_phi_m1, w_max_phi_m2, w_max_phi_dich, w_max_phi_filter, w_max_phi_lens])
 w_phi_crit = np.min(w_max_phi)
-w_FOV_crit = 2 * WD_obj * np.tan(w_phi_crit)    #mm
+w_FOV_crit = 2 * f_obj * np.tan(w_phi_crit)     #mm
+#w_FOV_crit = 2 * WD_obj * np.tan(w_phi_crit)    #mm (old method_)
 
 ### Spare room calculation
-h_needed_phi = np.arctan(h_FOV_cam / (2 * WD_obj))
-w_needed_phi = np.arctan(w_FOV_cam / (2 * WD_obj))
+#h_needed_phi = np.arctan(h_FOV_cam / (2 * WD_obj))     (old method)
+#w_needed_phi = np.arctan(w_FOV_cam / (2 * WD_obj))     (old method)
+
+h_needed_phi = np.arctan(h_FOV_cam / (2 * f_obj))
+w_needed_phi = np.arctan(w_FOV_cam / (2 * f_obj))
 
 h_d_dev_m1 = ((d_m1 - d_pup) / 2) - (L_1 * np.tan(h_needed_phi))
 h_d_dev_m2 = ((h_m2 - d_pup) / 2) - ((L_1 + L_2) * np.tan(h_needed_phi))
@@ -131,8 +136,8 @@ d_imagefield = np.sqrt((h_sensor_cam**2) + (w_sensor_cam**2))
 L_max = (d_imaging - d_pup) * f_imaging / d_imagefield
 
 ### Test prints
-# print(h_max_phi * 180 / np.pi)
-# print(w_max_phi * 180 / np.pi)
+print(h_max_phi * 180 / np.pi)
+print(w_max_phi * 180 / np.pi)
 # print()
 # print(h_d_dev)
 # print(w_d_dev)
