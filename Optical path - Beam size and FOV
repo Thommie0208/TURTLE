@@ -22,9 +22,8 @@ d_imaging = 25      #mm - Diameter of the imaging lens (most commonly an achroma
 d_f = 22        #mm - clear aperature of the filter
 
 #mirrors
-d_m1 = 25.4         #mm - Diameter of the first mirror (round)
-h_m2 = 25           #mm - Height of the second mirror (eliptical)
-w_m2 = 36           #mm - Width of the second mirror (eliptical)
+h_m = 25            #mm - Height of the second mirror (eliptical)
+w_m = 36            #mm - Width of the second mirror (eliptical)
 h_mg = 1            #mm - Gasket height on the mirror
 w_mg = 1            #mm - Gasket width on the mirror
 h_dich = 36         #mm - Dichroic mirror height
@@ -69,8 +68,8 @@ w_FOV_cam = w_sensor_cam / M_true  #in mm
 
 ### Component limited FOV
 # maximum height FOV (independent of the mirror angle)
-h_max_phi_m1 = np.arctan((d_m1 - 2 * w_mg - d_pup) / (2 * L_1))
-h_max_phi_m2 = np.arctan((h_m2 - 2 * w_mg - d_pup) / (2 * (L_1 + L_2)))
+h_max_phi_m1 = np.arctan((h_m - 2 * w_mg - d_pup) / (2 * L_1))
+h_max_phi_m2 = np.arctan((h_m - 2 * w_mg - d_pup) / (2 * (L_1 + L_2)))
 h_max_phi_dich = np.arctan((((h_dich - 2 * w_dg - 2 * h_dg)/ np.sqrt(2)) - d_pup) / (2 * (L_1 + L_2 + L_dich)))
 h_max_phi_filter = np.arctan((d_f  - d_pup) / (2 * (L_1 + L_2 + L_f)))
 h_max_phi_lens = np.arctan((d_imaging - d_pup) / (2 * (L_1 + L_2 + L_3)))
@@ -81,13 +80,10 @@ h_FOV_crit = 2 * f_obj * np.tan(h_phi_crit)
 #h_FOV_crit = 2 * WD_obj * np.tan(h_phi_crit)    #mm  (old method)
 
 # maximum width FOV (dependent on the mirror angle and at this point a mirror angle of 45 deg is assumed)
-w_m1 = d_m1 - 2 * w_mg - 2 * h_mg
-w_proj_m1 = w_m1 / np.sqrt(2)
-w_m2 = w_m2 - 2 * w_mg - 2 * h_mg
-w_proj_m2 = w_m2 / np.sqrt(2)
+w_proj_m = (w_m - 2 * w_mg - 2 * h_mg) / np.sqrt(2)
 
-w_max_phi_m1 = np.arctan((w_proj_m1 - d_pup) / (2 * L_1 + w_proj_m1))
-w_max_phi_m2 = np.arctan((w_proj_m2 - d_pup) / (2* L_1 + 2 * L_2 + w_proj_m2))
+w_max_phi_m1 = np.arctan((w_proj_m - d_pup) / (2 * L_1 + w_proj_m))
+w_max_phi_m2 = np.arctan((w_proj_m - d_pup) / (2* L_1 + 2 * L_2 + w_proj_m))
 w_max_phi_dich = np.arctan((w_dich - 2* w_dg - d_pup) / (2 * (L_1 + L_2 + L_dich)))
 w_max_phi_filter = np.arctan((d_f - d_pup) / (2 * (L_1 + L_2 + L_f)))
 w_max_phi_lens = np.arctan((d_imaging - d_pup) / (2 * (L_1 + L_2 + L_3)))
@@ -104,22 +100,22 @@ w_FOV_crit = 2 * f_obj * np.tan(w_phi_crit)     #mm
 h_needed_phi = np.arctan(h_FOV_cam / (2 * f_obj))
 w_needed_phi = np.arctan(w_FOV_cam / (2 * f_obj))
 
-h_d_dev_m1 = ((d_m1 - d_pup) / 2) - (L_1 * np.tan(h_needed_phi))
-h_d_dev_m2 = ((h_m2 - d_pup) / 2) - ((L_1 + L_2) * np.tan(h_needed_phi))
+h_d_dev_m1 = ((h_m - d_pup) / 2) - (L_1 * np.tan(h_needed_phi))
+h_d_dev_m2 = ((h_m - d_pup) / 2) - ((L_1 + L_2) * np.tan(h_needed_phi))
 h_d_dev_dich = ((w_dich - 2 * w_dg - 2 * h_dg - d_pup) / 2) - ((L_1 + L_2 + L_dich) * np.tan(h_needed_phi))
 h_d_dev_filter = ((d_f - d_pup) / 2) - ((L_1 + L_2 + L_f) * np.tan(h_needed_phi))
 h_d_dev_lens = ((d_imaging - d_pup) / 2) - ((f_imaging) * np.tan(h_needed_phi))
 h_d_dev = np.array([h_d_dev_m1, h_d_dev_m2, h_d_dev_dich, h_d_dev_filter, h_d_dev_lens])
 
-w_d_dev_m1 = ((w_proj_m1 - d_pup) / 2) - (((L_1 + (d_pup /2)) * np.tan(w_needed_phi)) / (1 - np.tan(w_needed_phi)))
-w_d_dev_m2 = ((w_proj_m2 - d_pup) / 2) - (((L_1 + L_2 + (d_pup / 2)) * np.tan(w_needed_phi)) / (1 - np.tan(w_needed_phi)))
+w_d_dev_m1 = ((w_proj_m - d_pup) / 2) - (((L_1 + (d_pup /2)) * np.tan(w_needed_phi)) / (1 - np.tan(w_needed_phi)))
+w_d_dev_m2 = ((w_proj_m - d_pup) / 2) - (((L_1 + L_2 + (d_pup / 2)) * np.tan(w_needed_phi)) / (1 - np.tan(w_needed_phi)))
 w_d_dev_dich = ((w_dich - 2 * w_dg - d_pup) / 2) - ((L_1 + L_2 + L_dich) * np.tan(w_needed_phi))
 w_d_dev_filter = ((d_f - d_pup) / 2) - ((L_1 + L_2 + L_f) * np.tan(w_needed_phi))
 w_d_dev_lens = ((d_imaging - d_pup) / 2) - ((f_imaging) * np.tan(w_needed_phi))
 w_d_dev = np.array([w_d_dev_m1, w_d_dev_m2, w_d_dev_dich, w_d_dev_filter, w_d_dev_lens])
 
-w_d_dev_m1_nc = ((w_proj_m1 - d_pup) / 2) - (((L_1 - (d_pup / 2)) * np.tan(w_needed_phi)) / (1 + np.tan(w_needed_phi)))
-w_d_dev_m2_nc = ((w_proj_m2 - d_pup) / 2) - (((L_1 + L_2 - (d_pup / 2)) * np.tan(w_needed_phi)) / (1 + np.tan(w_needed_phi)))
+w_d_dev_m1_nc = ((w_proj_m - d_pup) / 2) - (((L_1 - (d_pup / 2)) * np.tan(w_needed_phi)) / (1 + np.tan(w_needed_phi)))
+w_d_dev_m2_nc = ((w_proj_m - d_pup) / 2) - (((L_1 + L_2 - (d_pup / 2)) * np.tan(w_needed_phi)) / (1 + np.tan(w_needed_phi)))
 
 ### Resolution
 res_obj = 0.61 * wavelength * 10**(-3) / NA_obj
