@@ -7,8 +7,8 @@ import numpy as np
 
 ### Variables
 #camera
-pixles = np.array([3072, 2048])     #... - The resolution of the camera as in ... x ... (the order of input does not matter) (800 x 600)(1456 x 1088)(lab: 2056 x 1542)(UC2: 3072 x 2048)
-pixle_size = 2.4                  #micrometer - The pixle size of the camera (4.8)(3.45)(lab: 3.45)(UC2: 2.4)
+pixles = np.array([3072, 2048])     #... - The resolution of the camera as in ... x ... (the order of input does not matter) (800 x 600)(1456 x 1088)(lab: 2056 x 1542, IDS: UI-3070CP Rev. 2)(UC2: 3072 x 2048, hikrobot: mv-cs060-10uc-pro)
+pixle_size = 2.4                  #micrometer - The pixle size of the camera (4.8)(3.45)(lab: 3.45, IDS: UI-3070CP Rev. 2)(UC2: 2.4, hikrobot: mv-cs060-10uc-pro)
 
 #lenses
 M_obj = 10          #... - Magnification of the objective (4)(10)
