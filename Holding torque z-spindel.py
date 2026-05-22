@@ -8,9 +8,9 @@ thread_diameter = 8.0  # mm
 # Stage parameters
 infill = 0.25  # 25% infill
 pla_density = 1.25 * infill  # g/cm^3
-stage_length = 85.0  # mm
+stage_length = 76.0  # mm
 stage_width = 50.0  # mm
-stage_height = 100.0  # mm
+stage_height = 120.0  # mm
 motor_weight = 0.5 # kg
 stage_weight = (stage_length * stage_width * stage_height * pla_density) / 1e6 # kg
 
