@@ -7,8 +7,8 @@ import numpy as np
 
 ### Variables
 #camera
-pixles = np.array([2056, 1542])     #... - The resolution of the camera as in ... x ... (the order of input does not matter) (800 x 600)(1456 x 1088)(lab: 2056 x 1542, IDS: UI-3070CP Rev. 2)(UC2: 3072 x 2048, hikrobot: mv-cs060-10uc-pro)
-pixle_size = 3.45                  #micrometer - The pixle size of the camera (4.8)(3.45)(lab: 3.45, IDS: UI-3070CP Rev. 2)(UC2: 2.4, hikrobot: mv-cs060-10uc-pro)
+pixles = np.array([3072, 2048])     #... - The resolution of the camera as in ... x ... (the order of input does not matter) (800 x 600)(1456 x 1088)(lab: 2056 x 1542, IDS: UI-3070CP Rev. 2)(UC2: 3072 x 2048, hikrobot: mv-cs060-10uc-pro)
+pixle_size = 2.4                  #micrometer - The pixle size of the camera (4.8)(3.45)(lab: 3.45, IDS: UI-3070CP Rev. 2)(UC2: 2.4, hikrobot: mv-cs060-10uc-pro)
 
 #lenses
 M_obj = 4          #... - Magnification of the objective (4)(10)
@@ -17,6 +17,7 @@ WD_obj = 17         #mm - Working distance of the objective (17)(9)
 f_tube_corr = 180   #mm - Focal length of the corresponding tube lens (the tube lens from the same company as the objective)
 f_imaging = 200     #mm - Effective focal length of the imaging lens (most commonly an achromatic doublet or a tube lens)
 d_imaging = 25      #mm - Diameter of the imaging lens (most commonly an achromatic doublet or a tube lens)
+f_laser_shape = 200 #mm - Effective focal length of the lens used for the beam expansion of the lasers
 
 #filters
 d_f = 22        #mm - clear aperature of the filter
@@ -40,7 +41,8 @@ L_dich = 30     #mm - Distance between the midpoint of the second mirror and the
 L_f = 55        #mm - Distance between the midpoint of the second mirror and the emission filter
 
 #lasers
-wavelength = 510    #nm - Smallest flourescence emission wave length
+d_laser = 3.5     #mm - diameter of the laser beam emitted by the laser pointer (edmond: 1mm)(thorlabs: 3.5mm)
+emis_wl = 510   #nm - Smallest flourescence emission wave length
 
 
 
@@ -65,6 +67,7 @@ w_sensor_cam = pixle_size * w_pixle * 10**(-3)  #in mm
 
 h_FOV_cam = h_sensor_cam / M_true  #in mm
 w_FOV_cam = w_sensor_cam / M_true  #in mm
+diag_FOV_cam = np.sqrt(w_FOV_cam**2 + h_FOV_cam**2)
 
 ### Component limited FOV
 # maximum height FOV (independent of the mirror angle)
@@ -118,7 +121,7 @@ w_d_dev_m1_nc = ((w_proj_m - d_pup) / 2) - (((L_1 - (d_pup / 2)) * np.tan(w_need
 w_d_dev_m2_nc = ((w_proj_m - d_pup) / 2) - (((L_1 + L_2 - (d_pup / 2)) * np.tan(w_needed_phi)) / (1 + np.tan(w_needed_phi)))
 
 ### Resolution
-res_obj = 0.61 * wavelength * 10**(-3) / NA_obj
+res_obj = 0.61 * emis_wl * 10**(-3) / NA_obj
 res_cam = pixle_size / M_true
 Nyquist_cam = res_cam * 2.3
 
@@ -131,15 +134,23 @@ axis_shift = t_dich * np.sin(dev_alpha)
 d_imagefield = np.sqrt((h_sensor_cam**2) + (w_sensor_cam**2))
 L_max = (d_imaging - d_pup) * f_imaging / d_imagefield
 
+### Laser beam expansion
+# M_needed = w_FOV_crit / d_laser
+# f_needed = f_obj / M_needed
+
+# M_shape = 
+
 ### Test prints
-print(h_max_phi * 180 / np.pi)
-print(w_max_phi * 180 / np.pi)
+# print(h_max_phi * 180 / np.pi)
+# print(w_max_phi * 180 / np.pi)
 # print()
 # print(h_d_dev)
 # print(w_d_dev)
 # print(w_d_dev_m1_nc)
 # print(w_d_dev_m2_nc)
 # print(L_max)
+# print(M_needed)
+# print(f_needed)
 
 
 
@@ -153,8 +164,10 @@ print(f"\nMicroscope magnification: {M_true:.2f}\n"
       f"Maximal distance between objective and imaging lens: {L_max:.2f} mm\n"
       f"Optical axis shift: {axis_shift:.2f} mm\n"
       f"Maximum allowable FOV: {w_FOV_crit:.3f} x {h_FOV_crit:.3f} (in mm x mm).\n" 
-      f"Camera FOV: {w_FOV_cam:.3f} x {h_FOV_cam:.3f} (in mm x mm).")
-    
+      f"Camera FOV: {w_FOV_cam:.3f} x {h_FOV_cam:.3f} (in mm x mm) with a diagonal of {diag_FOV_cam:.3f} mm.")
+
+
+
 if w_FOV_cam > w_FOV_crit:
     if np.argmax(w_max_phi) == 1:
         print('As the FOV width of the camera is bigger than the by the components allowed FOV width, information will be lost.\n' 
