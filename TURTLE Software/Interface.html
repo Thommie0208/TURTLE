@@ -863,6 +863,7 @@ function getImageExtension(outputType) {
 
 let livestreamTimer = null;
 let livestreamEnabled = false;
+let livestreamRequestInFlight = false;
 
 function updateLivestreamPreview() {
     const preview = document.getElementById("image-preview");
@@ -875,6 +876,12 @@ function updateLivestreamPreview() {
 }
 
 function captureLivestreamFrame() {
+    if (livestreamRequestInFlight) {
+        return;
+    }
+
+    livestreamRequestInFlight = true;
+
     fetch("/api/livestream", {
         method: "POST",
         headers: { "Content-Type": "application/json" }
@@ -884,7 +891,10 @@ function captureLivestreamFrame() {
               updateLivestreamPreview();
           }
       })
-      .catch(() => {});
+      .catch(() => {})
+      .finally(() => {
+          livestreamRequestInFlight = false;
+      });
 }
 
 function setLivestreamEnabled(enabled) {

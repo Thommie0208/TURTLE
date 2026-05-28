@@ -4,6 +4,7 @@ import sys
 import platform
 import threading
 import os
+import atexit
 import cv2
 import numpy as np
 from ctypes import *
@@ -32,6 +33,21 @@ g_captured_frame = None
 g_capture_complete = threading.Event()
 g_last_frame_info = None
 g_last_image_data = None
+_capture_lock = threading.Lock()
+_sdk_initialized = False
+
+
+def _finalize_sdk():
+    global _sdk_initialized
+    if _sdk_initialized:
+        try:
+            MvCamera.MV_CC_Finalize()
+        except Exception:
+            pass
+        _sdk_initialized = False
+
+
+atexit.register(_finalize_sdk)
 
 # HB format list (from ImageSave.py)
 HB_format_list = [
@@ -401,82 +417,76 @@ def capture_single_image(save_type=1, filename=None, camera_index=0, timeout_ms=
     Returns:
         True if successful, False otherwise
     """
-    # Initialize SDK
-    MvCamera.MV_CC_Initialize()
-    
+    global _sdk_initialized
+
+    if not _sdk_initialized:
+        try:
+            MvCamera.MV_CC_Initialize()
+            _sdk_initialized = True
+        except Exception as e:
+            print("Failed to initialize camera SDK: %s" % str(e))
+            return False
+
     cam = None
-    try:
-        # Enumerate devices
-        deviceList = MV_CC_DEVICE_INFO_LIST()
-        tlayerType = MV_GIGE_DEVICE | MV_USB_DEVICE
-        
-        ret = MvCamera.MV_CC_EnumDevices(tlayerType, deviceList)
-        if ret != 0 or deviceList.nDeviceNum == 0:
-            print("No devices found!")
+    with _capture_lock:
+        try:
+            deviceList = MV_CC_DEVICE_INFO_LIST()
+            tlayerType = MV_GIGE_DEVICE | MV_USB_DEVICE
+
+            ret = MvCamera.MV_CC_EnumDevices(tlayerType, deviceList)
+            if ret != 0 or deviceList.nDeviceNum == 0:
+                print("No devices found!")
+                return False
+
+            if camera_index >= deviceList.nDeviceNum:
+                print("Camera index out of range!")
+                return False
+
+            cam = MvCamera()
+            stDeviceList = cast(deviceList.pDeviceInfo[camera_index], POINTER(MV_CC_DEVICE_INFO)).contents
+            ret = cam.MV_CC_CreateHandle(stDeviceList)
+            if ret != 0:
+                print("Failed to create handle!")
+                return False
+
+            ret = cam.MV_CC_OpenDevice(MV_ACCESS_Exclusive, 0)
+            if ret != 0:
+                print("Failed to open device!")
+                return False
+
+            if stDeviceList.nTLayerType == MV_GIGE_DEVICE:
+                nPacketSize = cam.MV_CC_GetOptimalPacketSize()
+                if int(nPacketSize) > 0:
+                    cam.MV_CC_SetIntValue("GevSCPSPacketSize", nPacketSize)
+
+            ret = cam.MV_CC_SetEnumValue("TriggerMode", MV_TRIGGER_MODE_OFF)
+            if ret != 0:
+                print("Failed to set trigger mode!")
+                return False
+
+            ret = cam.MV_CC_StartGrabbing()
+            if ret != 0:
+                print("Failed to start grabbing!")
+                return False
+
+            import time
+            time.sleep(0.05)
+
+            success, _ = capture_and_save(cam, save_type, filename, timeout_ms)
+            return bool(success)
+
+        except Exception as e:
+            print("Error: %s" % str(e))
             return False
-        
-        if camera_index >= deviceList.nDeviceNum:
-            print("Camera index out of range!")
-            return False
-        
-        # Create camera instance and handle
-        cam = MvCamera()
-        stDeviceList = cast(deviceList.pDeviceInfo[camera_index], POINTER(MV_CC_DEVICE_INFO)).contents
-        ret = cam.MV_CC_CreateHandle(stDeviceList)
-        if ret != 0:
-            print("Failed to create handle!")
-            return False
-        
-        # Open device
-        ret = cam.MV_CC_OpenDevice(MV_ACCESS_Exclusive, 0)
-        if ret != 0:
-            print("Failed to open device!")
-            return False
-        
-        # Set optimal packet size for GigE
-        if stDeviceList.nTLayerType == MV_GIGE_DEVICE:
-            nPacketSize = cam.MV_CC_GetOptimalPacketSize()
-            if int(nPacketSize) > 0:
-                cam.MV_CC_SetIntValue("GevSCPSPacketSize", nPacketSize)
-        
-        # Set trigger mode to off
-        ret = cam.MV_CC_SetEnumValue("TriggerMode", MV_TRIGGER_MODE_OFF)
-        if ret != 0:
-            print("Failed to set trigger mode!")
-            return False
-        
-        # Start grabbing
-        ret = cam.MV_CC_StartGrabbing()
-        if ret != 0:
-            print("Failed to start grabbing!")
-            return False
-        
-        # Allow camera to stabilize
-        import time
-        time.sleep(0.1)
-        
-        # Capture and save
-        success, saved_path = capture_and_save(cam, save_type, filename, timeout_ms)
-        
-        # Stop grabbing and cleanup
-        cam.MV_CC_StopGrabbing()
-        cam.MV_CC_CloseDevice()
-        cam.MV_CC_DestroyHandle()
-        
-        return success
-        
-    except Exception as e:
-        print("Error: %s" % str(e))
-        return False
-        
-    finally:
-        if cam:
-            try:
-                cam.MV_CC_CloseDevice()
-                cam.MV_CC_DestroyHandle()
-            except:
-                pass
-        MvCamera.MV_CC_Finalize()
+
+        finally:
+            if cam:
+                try:
+                    cam.MV_CC_StopGrabbing()
+                    cam.MV_CC_CloseDevice()
+                    cam.MV_CC_DestroyHandle()
+                except Exception:
+                    pass
 
 if __name__ == "__main__":
     # Check for command line arguments (single capture mode)
