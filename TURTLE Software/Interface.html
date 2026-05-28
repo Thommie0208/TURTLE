@@ -689,9 +689,10 @@
                 <label for="image_filename">Filename</label>
                 <input id="image_filename" type="text" value="capture" placeholder="capture">
                 <button class="image-btn" onclick="captureImage()">Capture</button>
+                <button id="livestream-toggle-btn" class="image-btn" onclick="toggleLivestream()">Start livestream</button>
             </div>
-            <img id="image-preview" class="image-preview" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='240'%3E%3Crect width='400' height='240' fill='%230f172a'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dominant-baseline='middle' fill='white' font-family='Arial' font-size='18'%3ECaptured image preview%3C/text%3E%3C/svg%3E" alt="Captured image preview">
-            <div class="image-note">Press Capture to save the current view and refresh this preview with the selected format.</div>
+            <img id="image-preview" class="image-preview" src="/images/livestream.jpg?t=" alt="Livestream preview">
+            <div class="image-note">Use the toggle to overwrite livestream.jpg every 0.2 s. Capture still saves the selected image to disk.</div>
         </div>
 
         <div class="panel console-panel">
@@ -860,6 +861,65 @@ function getImageExtension(outputType) {
     return ".raw";
 }
 
+let livestreamTimer = null;
+let livestreamEnabled = false;
+let livestreamRequestInFlight = false;
+
+function updateLivestreamPreview() {
+    const preview = document.getElementById("image-preview");
+    if (!preview) {
+        return;
+    }
+
+    preview.src = "/images/livestream.jpg?t=" + Date.now();
+    preview.alt = "Livestream preview";
+}
+
+function captureLivestreamFrame() {
+    if (livestreamRequestInFlight) {
+        return;
+    }
+
+    livestreamRequestInFlight = true;
+
+    fetch("/api/livestream", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" }
+    }).then((response) => response.json())
+      .then((result) => {
+          if (result && result.success) {
+              updateLivestreamPreview();
+          }
+      })
+      .catch(() => {})
+      .finally(() => {
+          livestreamRequestInFlight = false;
+      });
+}
+
+function setLivestreamEnabled(enabled) {
+    livestreamEnabled = enabled;
+    const toggleButton = document.getElementById("livestream-toggle-btn");
+
+    if (toggleButton) {
+        toggleButton.textContent = enabled ? "Stop livestream" : "Start livestream";
+    }
+
+    if (enabled) {
+        if (!livestreamTimer) {
+            livestreamTimer = setInterval(captureLivestreamFrame, 200);
+        }
+        captureLivestreamFrame();
+    } else if (livestreamTimer) {
+        clearInterval(livestreamTimer);
+        livestreamTimer = null;
+    }
+}
+
+function toggleLivestream() {
+    setLivestreamEnabled(!livestreamEnabled);
+}
+
 function captureImage() {
     const outputType = document.getElementById("image_format").value;
     const filename = (document.getElementById("image_filename").value || "capture").trim() || "capture";
@@ -872,10 +932,12 @@ function captureImage() {
         output_type: outputType
     }).then((result) => {
         if (result && result.success) {
-            const imageUrl = "/images/" + filename + getImageExtension(outputType) + "?t=" + Date.now();
-            preview.src = imageUrl;
-            preview.alt = "Captured image preview";
-            log("Captured image: " + imageUrl);
+            if (!livestreamEnabled) {
+                const imageUrl = "/images/" + filename + getImageExtension(outputType) + "?t=" + Date.now();
+                preview.src = imageUrl;
+                preview.alt = "Captured image preview";
+            }
+            log("Saved image: " + filename + getImageExtension(outputType));
         } else {
             preview.alt = "Capture failed";
             log("Image capture failed: " + JSON.stringify(result));
@@ -885,6 +947,8 @@ function captureImage() {
         log("Image capture error: " + error);
     });
 }
+
+setLivestreamEnabled(false);
 
 function takePicture(filename, outputType) {
     return captureImage();
