@@ -15,9 +15,9 @@ currentsystem = platform.system()
 if currentsystem == 'Windows':
     sys.path.append(os.path.join(os.getenv('MVCAM_COMMON_RUNENV'), "Samples", "Python", "MvImport"))
 else:
-    sys.path.append(os.path.join("..", "..", "MvImport"))
+    sys.path.append(os.path.join("/opt/MVS/Samples/aarch64/Python"))
 
-from MvCameraControl_class import *
+from MvImport.MvCameraControl_class import *
 
 # 兼容Python 2.x和3.x的输入处理
 if sys.version_info[0] < 3:  # Python 2.x

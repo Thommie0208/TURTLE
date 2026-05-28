@@ -3,6 +3,7 @@ import serial
 import time
 import json
 import RPi.GPIO as GPIO
+import ImageGrabAndSave
 
 # -------------------------
 # Settings
@@ -800,6 +801,13 @@ function goToFilter(filterNumber) {
         delay_us: 5000
     });
 }
+
+function takePicture(filename, outputType) {
+    postJSON("/api/picture", {
+        filename: filename,
+        output_type: outputType
+    });
+}
 </script>
 
 </body>
@@ -994,6 +1002,29 @@ def api_light():
         "state": "ON" if state else "OFF"
     })
 
+@app.route("/api/picture", methods=["POST"])
+def api_picture():
+    data = request.json
+
+    filename = data.get("filename", "")
+    output_type = data.get("output_type", "PNG")
+
+    output_type_list = ["raw", "JPEG", "BMP", "TIFF", "PNG"]
+
+    if output_type not in output_type_list:
+        return jsonify({"error": "Invalid output type"}), 400
+    else: 
+        output_type_index = output_type_list.index(output_type)
+
+    succes = ImageGrabAndSave.capture_single_image(output_type_index, filename)
+
+    return jsonify({
+        "filename": filename,
+        "output_type": output_type,
+        "success": succes
+    })
+    
+    
 
 if __name__ == "__main__":
     try:
