@@ -270,6 +270,11 @@
         color: white;
         font-size: 22px;
         font-weight: 700;
+        transition: color 0.15s ease;
+    }
+
+    .light-label.active {
+        color: #ffd84d;
     }
 
     .on-btn, .off-btn {
@@ -299,6 +304,11 @@
         display: block;
         margin: 12px auto;
         border: 2px solid black;
+    }
+
+    .filter-btn-active{
+        border: 2px solid rgb(255, 0, 0);
+        background: #310000;
     }
 
     .image-panel {
@@ -641,27 +651,27 @@
         <div class="panel">
             <h2>Brightfield /<br>Darkfield switch</h2>
             <button class="large-pill green-pill" onclick="setServoAngle(90)">Set Servo</button>
-            <button class="large-pill white-pill" onclick="setServoAngle(0)">Brightfield</button>
-            <button class="large-pill black-pill" onclick="setServoAngle(180)">Darkfield</button>
+            <button class="large-pill green-pill" onclick="setServoAngle(0)">Brightfield</button>
+            <button class="large-pill green-pill" onclick="setServoAngle(180)">Darkfield</button>
         </div>
 
         <div class="panel">
             <h2>Light source<br>control</h2>
 
             <div class="light-row">
-                <div class="light-label">Laser 1</div>
+                <div id="label-laser1" class="light-label">Laser 1</div>
                 <button class="on-btn" onclick="setLight('laser1', true)">ON</button>
                 <button class="off-btn" onclick="setLight('laser1', false)">OFF</button>
             </div>
 
             <div class="light-row">
-                <div class="light-label">Laser 2</div>
+                <div id="label-laser2" class="light-label">Laser 2</div>
                 <button class="on-btn" onclick="setLight('laser2', true)">ON</button>
                 <button class="off-btn" onclick="setLight('laser2', false)">OFF</button>
             </div>
 
             <div class="light-row">
-                <div class="light-label">LED</div>
+                <div id="label-led" class="light-label">LED</div>
                 <button class="on-btn" onclick="setLight('led', true)">ON</button>
                 <button class="off-btn" onclick="setLight('led', false)">OFF</button>
             </div>
@@ -833,20 +843,48 @@ function releaseMotors() {
     postJSON("/api/release", {});
 }
 
+function updateServoLabel(angle) {
+    const buttons = document.getElementsByClassName("green-pill");
+    for (let btn of buttons) {
+        btn.classList.toggle("filter-btn-active", btn.onclick.toString().includes("setServoAngle(" + angle + ")"));
+    }
+}
 function setServoAngle(angle) {
+    updateServoLabel(angle)
+
     postJSON("/api/servo", {
         angle: angle
     });
 }
 
+function updateLightLabel(light, state) {
+    const label = document.getElementById("label-" + light);
+    if (!label) {
+        return;
+    }
+
+    label.classList.toggle("active", Boolean(state));
+}
+
 function setLight(light, state) {
+    updateLightLabel(light, state);
+
     postJSON("/api/light", {
         light: light,
         state: state
     });
 }
 
+function setFilterActive(filterNumber) {
+    const buttons = document.getElementsByClassName("filter-btn");
+    for (let btn of buttons) {
+        btn.classList.toggle("filter-btn-active", btn.onclick.toString().includes("goToFilter(" + filterNumber + ")"));
+    }
+}
+
 function goToFilter(filterNumber) {
+    setFilterActive(filterNumber);
+
     postJSON("/api/filter", {
         filter: filterNumber,
         delay_us: 5000
