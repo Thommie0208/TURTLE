@@ -346,6 +346,16 @@ def api_light():
         "state": "ON" if state else "OFF"
     })
 
+@app.route("/api/livestream", methods=["POST"])
+def api_livestream():
+    success = ImageGrabAndSave.capture_single_image(1, "livestream")
+
+    return jsonify({
+        "success": success,
+        "filename": "livestream.jpg"
+    })
+
+
 @app.route("/api/pictures", methods=["POST"])
 def api_pictures():
     data = request.json
