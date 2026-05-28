@@ -339,7 +339,7 @@ def work_thread(cam=0, pData=0, nDataSize=0):
         #     # No data, just continue
         #     pass
 
-def capture_and_save(cam, save_type, custom_filename=None, timeout_ms=2000):
+def capture_and_save(cam, save_type, custom_filename=None, timeout_ms=2000) -> tuple[bool, str | None]:
     """
     Capture a single frame and save it
     
@@ -388,7 +388,7 @@ def capture_and_save(cam, save_type, custom_filename=None, timeout_ms=2000):
         print("Capture error: %s" % str(e))
         return False, None
 
-def capture_single_image(save_type=1, filename=None, camera_index=0, timeout_ms=2000):
+def capture_single_image(save_type=1, filename=None, camera_index=0, timeout_ms=2000) -> bool:
     """
     Simplified function to capture a single image (connect, capture, disconnect)
     
