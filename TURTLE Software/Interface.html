@@ -372,6 +372,7 @@
         background: black;
         color: #00ff99;
         width: 100%;
+        min-height: 320px;
         height: calc(100% - 58px);
         border-radius: 38px;
         padding: 16px 20px;
@@ -478,7 +479,8 @@
         }
 
         #console {
-            height: 220px;
+            min-height: 320px;
+            height: 320px;
         }
     }
     </style>
@@ -865,7 +867,7 @@ function captureImage() {
 
     preview.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='240'%3E%3Crect width='400' height='240' fill='%23111827'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dominant-baseline='middle' fill='white' font-family='Arial' font-size='16'%3ECapturing image...%3C/text%3E%3C/svg%3E";
 
-    postJSON("/api/picture", {
+    postJSON("/api/pictures", {
         filename: filename,
         output_type: outputType
     }).then((result) => {

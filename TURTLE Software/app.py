@@ -346,8 +346,8 @@ def api_light():
         "state": "ON" if state else "OFF"
     })
 
-@app.route("/api/picture", methods=["POST"])
-def api_picture():
+@app.route("/api/pictures", methods=["POST"])
+def api_pictures():
     data = request.json
 
     filename = data.get("filename", "")
