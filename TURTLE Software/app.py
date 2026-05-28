@@ -348,7 +348,7 @@ def api_light():
 
 @app.route("/api/livestream", methods=["POST"])
 def api_livestream():
-    success = ImageGrabAndSave.capture_single_image(1, "livestream")
+    success = ImageGrabAndSave.capture_single_image(1, "livestream", timeout_ms=200)
 
     return jsonify({
         "success": success,
@@ -387,6 +387,11 @@ if __name__ == "__main__":
 
     finally:
         try:
+            print("Deleting temporary livestream image")
+            livestream_path = os.path.join(APP_DIR, "livestream.jpg")
+            if os.path.exists(livestream_path):
+                os.remove(livestream_path)
+                
             print("Returning stage to origin...")
             command = {
                 "cmd": "home",

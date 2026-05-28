@@ -417,6 +417,9 @@ def capture_single_image(save_type=1, filename=None, camera_index=0, timeout_ms=
     Returns:
         True if successful, False otherwise
     """
+    if type(filename) == str and len(filename) == 0:
+        filename = None  # Ensure empty string is treated as None
+        
     global _sdk_initialized
 
     if not _sdk_initialized:
