@@ -81,15 +81,92 @@
         min-height: 100%;
     }
 
+    .stitching-panel {
+        grid-column: 1;
+        grid-row: 3;
+        min-height: 260px;
+        height: auto;
+    }
+
+    .stitching-panel .button-grid {
+        display: grid;
+        grid-template-columns: minmax(220px, 1fr) minmax(220px, 1fr);
+        gap: 16px;
+        margin-top: 16px;
+        align-items: start;
+    }
+
+    .stitching-panel .button-column {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .stitching-panel .point-row {
+        display: flex;
+        gap: 12px;
+        align-items: stretch;
+    }
+
+    .stitching-panel .point-row button {
+        flex: 1;
+    }
+
+    .stitching-panel .stitch-btn,
+    .stitching-panel .reset-point-btn,
+    .stitching-panel .reset-all-btn {
+        width: 100%;
+        min-height: 58px;
+        background: #2b9360;
+        color: white;
+        border: 2px solid black;
+        font-size: 18px;
+        font-weight: 700;
+        border-radius: 18px;
+    }
+
+    .stitching-panel .reset-point-btn {
+        background: #ff7b00;
+    }
+
+    .stitching-panel .reset-all-btn {
+        background: #b33131;
+    }
+
+    .stitching-panel .coordinates-box {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        border-radius: 24px;
+        padding: 18px;
+        min-height: 260px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .stitching-panel .coordinates-box .status-label {
+        color: white;
+        font-size: 16px;
+        margin-bottom: 12px;
+    }
+
+    .stitching-panel .coordinates-box .coordinate-value {
+        color: white;
+        font-size: 15px;
+        line-height: 1.5;
+        white-space: pre-wrap;
+    }
+
     .main-grid > .panel:nth-of-type(2),
     .main-grid > .panel:nth-of-type(3),
-    .main-grid > .panel:nth-of-type(4) {
+    .main-grid > .panel:nth-of-type(4),
+    .filter-panel {
         min-height: 370px;
         height: 370px;
     }
 
     .console-panel {
-        grid-column: 1 / span 4;
+        grid-column: 2 / span 4;
         grid-row: 3;
         height: 100%;
     }
@@ -647,6 +724,30 @@
             </div>
         </div>
 
+        <div class="panel stitching-panel">
+            <h2>Image stitching</h2>
+            <div class="button-grid">
+                <div class="button-column">
+                    <div class="point-row">
+                        <button class="stitch-btn" onclick="setStitchingPoint(1)">Set point 1</button>
+                        <button class="reset-point-btn" onclick="resetStitchingPoint(1)">Reset point 1</button>
+                    </div>
+                    <div class="point-row">
+                        <button class="stitch-btn" onclick="setStitchingPoint(2)">Set point 2</button>
+                        <button class="reset-point-btn" onclick="resetStitchingPoint(2)">Reset point 2</button>
+                    </div>
+                    <div class="point-row">
+                        <button class="stitch-btn" onclick="setStitchingPoint(3)">Set point 3</button>
+                        <button class="reset-point-btn" onclick="resetStitchingPoint(3)">Reset point 3</button>
+                    </div>
+                    <button class="reset-all-btn" onclick="resetStitchingPoints()">Reset points</button>
+                </div>
+                <div class="coordinates-box">
+                    <div class="status-label">Point coordinates</div>
+                    <div class="coordinate-value" id="stitching-status">No points set yet.</div>
+                </div>
+            </div>
+        </div>
 
         <div class="panel">
             <h2>Brightfield /<br>Darkfield switch</h2>
@@ -677,7 +778,7 @@
             </div>
         </div>
 
-        <div class="panel">
+        <div class="panel filter-panel">
             <h2 style="text-align:center;">Filter array</h2>
             <button class="filter-btn" onclick="goToFilter(1)">Filter 1</button>
             <button class="filter-btn" onclick="goToFilter(2)">Filter 2</button>
@@ -889,6 +990,57 @@ function goToFilter(filterNumber) {
         filter: filterNumber,
         delay_us: 5000
     });
+}
+
+let stitchingPoints = [];
+
+function updateStitchingStatus() {
+    const label = document.getElementById("stitching-status");
+    if (!label) {
+        return;
+    }
+
+    if (stitchingPoints.length === 0) {
+        label.textContent = "No points set yet.";
+        return;
+    }
+
+    const entries = stitchingPoints.map((point, index) => {
+        if (!point) {
+            return `Point ${index + 1}: unset`;
+        }
+        return `Point ${index + 1}: X=${point.x} µm, Y=${point.y} µm, Z=${point.z} µm`;
+    });
+
+    label.textContent = entries.join("\r\n");
+}
+
+function setStitchingPoint(pointIndex) {
+    const x = document.getElementById("pos_x")?.innerText || "0.0";
+    const y = document.getElementById("pos_y")?.innerText || "0.0";
+    const z = document.getElementById("pos_z")?.innerText || "0.0";
+
+    stitchingPoints[pointIndex - 1] = {
+        x: x,
+        y: y,
+        z: z,
+        timestamp: Date.now()
+    };
+
+    updateStitchingStatus();
+    log(`Set stitching point ${pointIndex}: X=${x}, Y=${y}, Z=${z}`);
+}
+
+function resetStitchingPoint(pointIndex) {
+    stitchingPoints[pointIndex - 1] = null;
+    updateStitchingStatus();
+    log(`Reset stitching point ${pointIndex}.`);
+}
+
+function resetStitchingPoints() {
+    stitchingPoints = [];
+    updateStitchingStatus();
+    log("Reset stitching points.");
 }
 
 function getImageExtension(outputType) {
