@@ -301,6 +301,73 @@
         border: 2px solid black;
     }
 
+    .image-panel {
+        display: grid;
+        grid-template-columns: 1fr 1.1fr;
+        grid-template-areas:
+            "title title"
+            "controls preview"
+            "note preview";
+        gap: 10px 14px;
+        align-items: start;
+    }
+
+    .image-panel h2 {
+        grid-area: title;
+    }
+
+    .image-controls {
+        grid-area: controls;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        align-items: center;
+    }
+
+    .image-controls label {
+        color: white;
+        font-size: 16px;
+        font-weight: 700;
+    }
+
+    .image-controls select,
+    .image-controls input {
+        min-height: 40px;
+        border: 2px solid black;
+        border-radius: 10px;
+        padding: 0 10px;
+        font-size: 15px;
+        box-sizing: border-box;
+    }
+
+    .image-btn {
+        background: #2b9360;
+        color: white;
+        border: 2px solid black;
+        border-radius: 14px;
+        width: 140px;
+        height: 44px;
+        font-size: 16px;
+    }
+
+    .image-preview {
+        grid-area: preview;
+        width: 100%;
+        min-height: 180px;
+        border-radius: 24px;
+        background: linear-gradient(135deg, #0f172a, #111827);
+        object-fit: contain;
+        border: 2px solid rgba(255,255,255,0.35);
+        align-self: stretch;
+    }
+
+    .image-note {
+        grid-area: note;
+        color: white;
+        font-size: 13px;
+        line-height: 1.35;
+    }
+
     #console {
         background: black;
         color: #00ff99;
@@ -606,6 +673,25 @@
             <button class="filter-btn" onclick="goToFilter(4)">Filter 4</button>
         </div>
 
+        <div class="panel image-panel" style="grid-column: 2 / span 3; grid-row: 2; min-height: 260px;">
+            <h2>Image capture</h2>
+            <div class="image-controls">
+                <label for="image_format">Format</label>
+                <select id="image_format">
+                    <option value="raw">raw</option>
+                    <option value="JPEG">JPEG</option>
+                    <option value="PNG">PNG</option>
+                    <option value="TIFF">TIFF</option>
+                    <option value="BMP">BMP</option>
+                </select>
+                <label for="image_filename">Filename</label>
+                <input id="image_filename" type="text" value="capture" placeholder="capture">
+                <button class="image-btn" onclick="captureImage()">Capture</button>
+            </div>
+            <img id="image-preview" class="image-preview" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='240'%3E%3Crect width='400' height='240' fill='%230f172a'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dominant-baseline='middle' fill='white' font-family='Arial' font-size='18'%3ECaptured image preview%3C/text%3E%3C/svg%3E" alt="Captured image preview">
+            <div class="image-note">Press Capture to save the current view and refresh this preview with the selected format.</div>
+        </div>
+
         <div class="panel console-panel">
             <h2>Console</h2>
             <div id="console"></div>
@@ -764,11 +850,42 @@ function goToFilter(filterNumber) {
     });
 }
 
-function takePicture(filename, outputType) {
+function getImageExtension(outputType) {
+    if (outputType === "JPEG") return ".jpg";
+    if (outputType === "PNG") return ".png";
+    if (outputType === "TIFF") return ".tif";
+    if (outputType === "BMP") return ".bmp";
+    return ".raw";
+}
+
+function captureImage() {
+    const outputType = document.getElementById("image_format").value;
+    const filename = (document.getElementById("image_filename").value || "capture").trim() || "capture";
+    const preview = document.getElementById("image-preview");
+
+    preview.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='240'%3E%3Crect width='400' height='240' fill='%23111827'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dominant-baseline='middle' fill='white' font-family='Arial' font-size='16'%3ECapturing image...%3C/text%3E%3C/svg%3E";
+
     postJSON("/api/picture", {
         filename: filename,
         output_type: outputType
+    }).then((result) => {
+        if (result && result.success) {
+            const imageUrl = "/images/" + filename + getImageExtension(outputType) + "?t=" + Date.now();
+            preview.src = imageUrl;
+            preview.alt = "Captured image preview";
+            log("Captured image: " + imageUrl);
+        } else {
+            preview.alt = "Capture failed";
+            log("Image capture failed: " + JSON.stringify(result));
+        }
+    }).catch((error) => {
+        preview.alt = "Capture failed";
+        log("Image capture error: " + error);
     });
+}
+
+function takePicture(filename, outputType) {
+    return captureImage();
 }
 </script>
 
