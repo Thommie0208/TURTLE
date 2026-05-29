@@ -806,7 +806,7 @@
                     <option value="BMP">BMP</option>
                 </select>
                 <label for="image_filename">Filename</label>
-                <input id="image_filename" type="text" value="capture" placeholder="capture">
+                <input id="image_filename" type="text" value="filename" placeholder="">
                 <button class="image-btn" onclick="captureImage()">Capture</button>
                 <button id="livestream-toggle-btn" class="image-btn" onclick="toggleLivestream()">Start livestream</button>
             </div>
@@ -1050,6 +1050,9 @@ function resetStitchingPoints() {
 }
 
 function startImageStitch() {
+    postJSON("/api/stitch", {
+        points: stitchingPoints
+    });
     log("Started image stitching.");
 }
 
@@ -1122,7 +1125,7 @@ function toggleLivestream() {
 
 function captureImage() {
     const outputType = document.getElementById("image_format").value;
-    const filename = (document.getElementById("image_filename").value || "capture").trim() || "capture";
+    const filename = (document.getElementById("image_filename").value || "capture").trim() || "filename";
     const preview = document.getElementById("image-preview");
 
     preview.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='240'%3E%3Crect width='400' height='240' fill='%23111827'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dominant-baseline='middle' fill='white' font-family='Arial' font-size='16'%3ECapturing image...%3C/text%3E%3C/svg%3E";
