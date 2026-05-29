@@ -126,6 +126,17 @@
         border-radius: 18px;
     }
 
+    .stitching-panel #stitch_folder {
+        width: 100%;
+        min-height: 40px;
+        border: 2px solid black;
+        border-radius: 10px;
+        padding: 0 10px;
+        font-size: 15px;
+        box-sizing: border-box;
+        background: #f0f0f0;
+    }
+
     .stitching-panel .reset-point-btn {
         background: #ff7b00;
     }
@@ -135,8 +146,11 @@
     }
 
     .stitching-panel .start-stitch-btn {
-        background: #1f6fe4;
-        min-height: 50px;
+        background: #2b9360;
+        color: white;
+        border: 2px solid black;
+        border-radius: 14px;
+        min-height: 44px;
         font-size: 16px;
     }
 
@@ -1050,7 +1064,9 @@ function resetStitchingPoints() {
     log("Reset stitching points.");
 }
 
-function startImageStitch(foldername) {
+function startImageStitch() {
+    const foldername = (document.getElementById("stitch_folder").value || "stitch").trim() || "foldername";
+
     postJSON("/api/stitch", {
         points: stitchingPoints,
         foldername: foldername
