@@ -407,6 +407,7 @@ def api_stitch():
             y_cor += 1
         path = os.path.join(foldername, f"{y_cor}{x_cor}")
         ImageGrabAndSave.capture_single_image(4, path)
+        time.sleep(2)
                                               
     return jsonify({
         "ok": True,
@@ -457,6 +458,45 @@ def determine_stitch_square(points: list) -> list[dict[str, str | int]]:
         steps_in_x = 0
     return steps
 
+@app.route("/api/stack", methods=["POST"])
+def api_stack():
+    data = request.get_json(silent=True) or {}
+
+    z_start: float = data.get("zStart", 0.0)
+    z_end: float = data.get("zEnd", 0.0)
+    z_steps: int = data.get("zSteps", 1)
+    foldername: str = data.get("folderName", "")
+
+    if not isinstance(z_start, (int, float)) or not isinstance(z_end, (int, float)):
+        return jsonify({"error": "Invalid z-stack parameters"}), 400
+
+    z_list = np.arange(z_start, z_end, z_steps)
+    stepsize = 1/2048 * 1000 #micro m
+    steps = []
+    for z in range(len(z_list)):
+        steps_in_direction = int((z_list[z] - z_list[z - 1])/stepsize)
+        steps.append({
+            "cmd": "move",
+            "axis": "z",
+            "steps": steps_in_direction,
+            "delay_us": 2000,
+            "power": 70
+            })
+        
+    sleeptime = (((z_end - z_start)/z_steps) * 45) / 10000 # Based on the measurement of 1 cm taking 45 seconds.
+    for i, step in enumerate(steps):
+        send_to_pico(step)
+        time.sleep(sleeptime)
+        path = os.path.join(foldername, f"{i}")
+        ImageGrabAndSave.capture_single_image(4, path)
+        time.sleep(2)
+
+    return jsonify({
+        "ok": True,
+        "z_start": z_start,
+        "z_end": z_end,
+        "z_steps": z_steps
+    })
 
 if __name__ == "__main__":
     try:

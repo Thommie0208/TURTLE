@@ -51,7 +51,7 @@
         box-sizing: border-box;
         display: grid;
         grid-template-columns: minmax(0, 1.8fr) minmax(260px, 0.8fr) minmax(240px, 0.8fr) minmax(220px, 0.7fr);
-        grid-template-rows: auto auto;
+        grid-template-rows: auto auto auto auto auto;
         gap: 18px;
         padding: 22px;
         align-items: stretch;
@@ -82,7 +82,7 @@
     }
 
     .stitching-panel {
-        grid-column: 1;
+        grid-column: 1 / span 2;
         grid-row: 3;
         min-height: 280px;
         height: auto;
@@ -154,6 +154,60 @@
         font-size: 16px;
     }
 
+    .zstack-panel {
+        grid-column: 3 / span 4;
+        grid-row: 3;
+        min-height: 280px;
+        height: auto;
+        background: #7ed957;
+    }
+
+    .zstack-panel .zstack-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .zstack-panel .zstack-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .zstack-panel label {
+        color: white;
+        font-size: 15px;
+        font-weight: 700;
+        min-width: 78px;
+    }
+
+    .zstack-panel input {
+        flex: 1;
+        min-height: 40px;
+        border: 2px solid black;
+        border-radius: 10px;
+        padding: 0 10px;
+        font-size: 15px;
+        box-sizing: border-box;
+        background: #f0f0f0;
+    }
+
+    .zstack-panel .zstack-btn,
+    .zstack-panel .zstack-reset-btn {
+        width: 100%;
+        min-height: 42px;
+        background: #2b9360;
+        color: white;
+        border: 2px solid black;
+        border-radius: 12px;
+        font-size: 15px;
+        font-weight: 700;
+    }
+
+    .zstack-panel .zstack-reset-btn {
+        background: #b33131;
+    }
+
     .stitching-panel .coordinates-box {
         background: rgba(255, 255, 255, 0.1);
         border: 1px solid rgba(255, 255, 255, 0.25);
@@ -187,8 +241,8 @@
     }
 
     .console-panel {
-        grid-column: 2 / span 4;
-        grid-row: 3;
+        grid-column: 1 / span 4;
+        grid-row: 4;
         height: 100%;
     }
 
@@ -772,6 +826,30 @@
             </div>
         </div>
 
+        <div class="panel zstack-panel">
+            <h2>Z-stack</h2>
+            <div class="zstack-grid">
+                <div class="zstack-row">
+                    <label for="z_start">Start z</label>
+                    <input id="z_start" type="text" value="0.0" placeholder="Start z" readonly>
+                    <button class="zstack-btn" onclick="setZStart()">Set current Z</button>
+                </div>
+                <div class="zstack-row">
+                    <label for="z_end">End z</label>
+                    <input id="z_end" type="text" value="0.0" placeholder="End z" readonly>
+                    <button class="zstack-btn" onclick="setZEnd()">Set current Z</button>
+                </div>
+                <div class="zstack-row">
+                    <label for="z_steps">Steps</label>
+                    <input id="z_steps" type="number" value="10" min="1" placeholder="Steps">
+                    <button class="zstack-btn" onclick="setZSteps()">Set steps</button>
+                </div>
+                <input id="zstack_folder" type="text" value="foldername" placeholder="zstack">
+                <button class="zstack-btn" onclick="startZStack()">Start z-stack</button>
+                <button class="zstack-reset-btn" onclick="resetZStack()">Reset values</button>
+            </div>
+        </div>
+
         <div class="panel">
             <h2>Brightfield /<br>Darkfield switch</h2>
             <button class="large-pill green-pill" onclick="setServoAngle(90)">Set Servo</button>
@@ -1072,6 +1150,46 @@ function startImageStitch() {
         foldername: foldername
     });
     log("Started image stitching.");
+}
+
+let zStackSettings = {
+    start: 0,
+    end: 100,
+    steps: 10
+};
+
+function setZStart() {
+    const z = parseFloat(document.getElementById("pos_z")?.innerText || 0);
+    zStackSettings.start = z;
+    document.getElementById("z_start").value = z.toFixed(1);
+    log("Z-stack start set to " + zStackSettings.start + " µm");
+}
+
+function setZEnd() {
+    const z = parseFloat(document.getElementById("pos_z")?.innerText || 0);
+    zStackSettings.end = z;
+    document.getElementById("z_end").value = z.toFixed(1);
+    log("Z-stack end set to " + zStackSettings.end + " µm");
+}
+
+function setZSteps() {
+    zStackSettings.steps = parseInt(document.getElementById("z_steps").value || 1);
+    log("Z-stack steps set to " + zStackSettings.steps);
+}
+
+function startZStack() {
+    setZStart();
+    setZEnd();
+    setZSteps();
+    log("Starting z-stack from " + zStackSettings.start + " to " + zStackSettings.end + " in " + zStackSettings.steps + " steps.");
+}
+
+function resetZStack() {
+    document.getElementById("z_start").value = "0.0";
+    document.getElementById("z_end").value = "0.0";
+    document.getElementById("z_steps").value = 10;
+    zStackSettings = { start: 0, end: 0, steps: 10 };
+    log("Reset z-stack values.");
 }
 
 function getImageExtension(outputType) {
