@@ -84,7 +84,7 @@
     .stitching-panel {
         grid-column: 1;
         grid-row: 3;
-        min-height: 260px;
+        min-height: 280px;
         height: auto;
     }
 
@@ -114,7 +114,8 @@
 
     .stitching-panel .stitch-btn,
     .stitching-panel .reset-point-btn,
-    .stitching-panel .reset-all-btn {
+    .stitching-panel .reset-all-btn,
+    .stitching-panel .start-stitch-btn {
         width: 100%;
         min-height: 58px;
         background: #2b9360;
@@ -133,12 +134,18 @@
         background: #b33131;
     }
 
+    .stitching-panel .start-stitch-btn {
+        background: #1f6fe4;
+        min-height: 50px;
+        font-size: 16px;
+    }
+
     .stitching-panel .coordinates-box {
         background: rgba(255, 255, 255, 0.1);
         border: 1px solid rgba(255, 255, 255, 0.25);
         border-radius: 24px;
         padding: 18px;
-        min-height: 260px;
+        min-height: 220px;
         display: flex;
         flex-direction: column;
         justify-content: center;
@@ -740,12 +747,13 @@
                         <button class="stitch-btn" onclick="setStitchingPoint(3)">Set point 3</button>
                         <button class="reset-point-btn" onclick="resetStitchingPoint(3)">Reset point 3</button>
                     </div>
-                    <button class="reset-all-btn" onclick="resetStitchingPoints()">Reset points</button>
+                    <button class="reset-all-btn" onclick="resetStitchingPoints()">Reset points/stitching</button>
                 </div>
                 <div class="coordinates-box">
                     <div class="status-label">Point coordinates</div>
                     <div class="coordinate-value" id="stitching-status">No points set yet.</div>
                 </div>
+                <button class="start-stitch-btn" onclick="startImageStitch()">Start image stitch</button>
             </div>
         </div>
 
@@ -1039,6 +1047,10 @@ function resetStitchingPoints() {
     stitchingPoints = [];
     updateStitchingStatus();
     log("Reset stitching points.");
+}
+
+function startImageStitch() {
+    log("Started image stitching.");
 }
 
 function getImageExtension(outputType) {
