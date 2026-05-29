@@ -11,20 +11,13 @@ from ctypes import *
 from datetime import datetime
 
 
-# 兼容不同操作系统加载 动态库
 currentsystem = platform.system()
 if currentsystem == 'Windows':
     sys.path.append(os.path.join(os.getenv('MVCAM_COMMON_RUNENV'), "Samples", "Python", "MvImport"))
-else:
-    sys.path.append(os.path.join("/opt/MVS/Samples/aarch64/Python"))
+else: # Assume the Raspberry Pi environment
+    sys.path.append(os.path.join("/opt/MVS/Samples/aarch64/Python")) #This is also where ImageSave.py and GrabImage.py are located, the files adapted into this single file.
 
 from MvImport.MvCameraControl_class import *
-
-# 兼容Python 2.x和3.x的输入处理
-if sys.version_info[0] < 3:  # Python 2.x
-    input_func = raw_input
-else:  # Python 3.x
-    input_func = input
 
 # Global flags
 g_bExit = False
@@ -91,25 +84,18 @@ HB_format_list = [
 
 # Decoding Characters
 def decoding_char(ctypes_char_array):
-    """
-    安全地从 ctypes 字符数组中解码出字符串。
-    适用于 Python 2.x 和 3.x，以及 32/64 位环境。
-    """
     byte_str = memoryview(ctypes_char_array).tobytes()
     
-    # 在第一个空字符处截断
     null_index = byte_str.find(b'\x00')
     if null_index != -1:
         byte_str = byte_str[:null_index]
     
-    # 多编码尝试解码
     for encoding in ['gbk', 'utf-8', 'latin-1']:
         try:
             return byte_str.decode(encoding)
         except UnicodeDecodeError:
             continue
     
-    # 如果所有编码都失败，使用替换策略
     return byte_str.decode('latin-1', errors='replace')
 
 def save_non_raw_image(save_type, frame_info, cam_instance, custom_filename=None):
@@ -301,7 +287,6 @@ def convert_to_opencv(frame_info):
         print("Convert error: %s" % str(e))
         return None
 
-# 为线程定义一个函数
 def work_thread(cam=0, pData=0, nDataSize=0):
     """
     Continuous grabbing thread with on-demand capture support
@@ -476,7 +461,7 @@ def capture_single_image(save_type=1, filename=None, camera_index=0, timeout_ms=
             time.sleep(0.05)
 
             success, _ = capture_and_save(cam, save_type, filename, timeout_ms)
-            return bool(success)
+            return success
 
         except Exception as e:
             print("Error: %s" % str(e))
@@ -518,15 +503,15 @@ if __name__ == "__main__":
         print("Capturing %s image..." % type_names.get(save_type, 'Unknown'))
         
         if capture_single_image(save_type, filename, camera_idx):
-            print("✓ Image captured successfully!")
+            print("Image captured successfully!")
             sys.exit(0)
         else:
-            print("✗ Failed to capture image!")
+            print("Failed to capture image!")
             sys.exit(1)
     
     # Interactive mode (original GrabImage.py behavior with saving)
     try:
-        # ch:初始化SDK | en: initialize SDK
+        # initialize SDK
         MvCamera.MV_CC_Initialize()
 
         SDKVersion = MvCamera.MV_CC_GetSDKVersion()
@@ -535,7 +520,7 @@ if __name__ == "__main__":
         deviceList = MV_CC_DEVICE_INFO_LIST()
         tlayerType = MV_GIGE_DEVICE | MV_USB_DEVICE
         
-        # ch:枚举设备 | en:Enum device
+        # Enum device
         ret = MvCamera.MV_CC_EnumDevices(tlayerType, deviceList)
         if ret != 0:
             print("enum devices fail! ret[0x%x]" % ret)
@@ -567,7 +552,7 @@ if __name__ == "__main__":
                 strSerialNumber = decoding_char(mvcc_dev_info.SpecialInfo.stUsb3VInfo.chSerialNumber)                
                 print("user serial number: %s" % strSerialNumber)
 
-        nConnectionNum = input_func("please input the number of the device to connect: ")
+        nConnectionNum = input("please input the number of the device to connect: ")
 
         if int(nConnectionNum) >= deviceList.nDeviceNum:
             print("input error!")
@@ -580,27 +565,27 @@ if __name__ == "__main__":
         print("  2 - BMP")
         print("  3 - TIFF")
         print("  4 - PNG")
-        nSaveImageType = input_func("please input number (0-4): ")
+        nSaveImageType = input("please input number (0-4): ")
         if int(nSaveImageType) not in {0, 1, 2, 3, 4}:
             print("input error!")
             sys.exit()
 
-        # ch:创建相机实例 | en:Creat Camera Object
+        # Create Camera Object
         cam = MvCamera()
         
-        # ch:选择设备并创建句柄| en:Select device and create handle
+        # Select device and create handle
         stDeviceList = cast(deviceList.pDeviceInfo[int(nConnectionNum)], POINTER(MV_CC_DEVICE_INFO)).contents
 
         ret = cam.MV_CC_CreateHandle(stDeviceList)
         if ret != 0:
             raise Exception("create handle fail! ret[0x%x]" % ret)
 
-        # ch:打开设备 | en:Open device
+        # Open device
         ret = cam.MV_CC_OpenDevice(MV_ACCESS_Exclusive, 0)
         if ret != 0:
             raise Exception("open device fail! ret[0x%x]" % ret)
         
-        # ch:探测网络最佳包大小(只对GigE相机有效) | en:Detection network optimal package size(It only works for the GigE camera)
+        # Detection network optimal package size(It only works for the GigE camera)
         if stDeviceList.nTLayerType == MV_GIGE_DEVICE:
             nPacketSize = cam.MV_CC_GetOptimalPacketSize()
             if int(nPacketSize) > 0:
@@ -610,12 +595,12 @@ if __name__ == "__main__":
             else:
                 print("Warning: Get Packet Size fail! ret[0x%x]" % nPacketSize)
 
-        # ch:设置触发模式为off | en:Set trigger mode as off
+        # Set trigger mode as off
         ret = cam.MV_CC_SetEnumValue("TriggerMode", MV_TRIGGER_MODE_OFF)
         if ret != 0:
             raise Exception("set trigger mode fail! ret[0x%x]" % ret)
 
-        # ch:开始取流 | en:Start grab image
+        # Start grabbing image
         ret = cam.MV_CC_StartGrabbing()
         if ret != 0:
             raise Exception("start grabbing fail! ret[0x%x]" % ret)
@@ -637,7 +622,7 @@ if __name__ == "__main__":
         capture_count = 0
         
         while True:
-            user_input = input_func("\nCommand (c/q): ").lower()
+            user_input = input("\nCommand (c/q): ").lower()
             
             if user_input == 'c':
                 capture_count += 1
@@ -662,13 +647,13 @@ if __name__ == "__main__":
                         ret_code, saved_path = save_non_raw_image(int(nSaveImageType), stOutFrame, cam)
                     
                     if ret_code == 0:
-                        print("✓ Image saved: %s" % saved_path)
+                        print("Image saved: %s" % saved_path)
                     else:
-                        print("✗ Failed to save image! Error: 0x%x" % ret_code)
+                        print("Failed to save image! Error: 0x%x" % ret_code)
                     
                     cam.MV_CC_FreeImageBuffer(stOutFrame)
                 else:
-                    print("✗ Failed to capture frame! Error: 0x%x" % ret)
+                    print("Failed to capture frame! Error: 0x%x" % ret)
                     
             elif user_input == 'q':
                 print("\nStopping...")
@@ -679,17 +664,17 @@ if __name__ == "__main__":
         g_bExit = True
         hThreadHandle.join(timeout=1)
 
-        # ch:停止取流 | en:Stop grab image
+        # Stop grabbing image
         ret = cam.MV_CC_StopGrabbing()
         if ret != 0:
             raise Exception("stop grabbing fail! ret[0x%x]" % ret)
 
-        # ch:关闭设备 | Close device
+        # Close device
         ret = cam.MV_CC_CloseDevice()
         if ret != 0:
             raise Exception("close deivce fail! ret[0x%x]" % ret)
 
-        # ch:销毁句柄 | Destroy handle
+        # Destroy handle
         cam.MV_CC_DestroyHandle()
 
     except Exception as e:
