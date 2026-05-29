@@ -1009,7 +1009,7 @@ function updateStitchingStatus() {
         if (!point) {
             return `Point ${index + 1}: unset`;
         }
-        return `Point ${index + 1}: X=${point.x} µm, Y=${point.y} µm, Z=${point.z} µm`;
+        return `Point ${index + 1}: X=${point.x} µm, Y=${point.y} µm`;
     });
 
     label.textContent = entries.join("\r\n");
@@ -1018,17 +1018,15 @@ function updateStitchingStatus() {
 function setStitchingPoint(pointIndex) {
     const x = document.getElementById("pos_x")?.innerText || "0.0";
     const y = document.getElementById("pos_y")?.innerText || "0.0";
-    const z = document.getElementById("pos_z")?.innerText || "0.0";
 
     stitchingPoints[pointIndex - 1] = {
         x: x,
         y: y,
-        z: z,
         timestamp: Date.now()
     };
 
     updateStitchingStatus();
-    log(`Set stitching point ${pointIndex}: X=${x}, Y=${y}, Z=${z}`);
+    log(`Set stitching point ${pointIndex}: X=${x}, Y=${y}`);
 }
 
 function resetStitchingPoint(pointIndex) {
