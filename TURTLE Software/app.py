@@ -5,6 +5,7 @@ import json
 import os
 import RPi.GPIO as GPIO
 import ImageGrabAndSave
+import numpy as np
 
 # -------------------------
 # Settings
@@ -23,6 +24,10 @@ FILTER_POWER = 80
 
 # The app assumes the wheel starts on Filter 1
 current_filter = 1
+
+required_overlap = 10 #%
+camera_fov: tuple[float, float] = (1.106*1000, 1.659*1000) #x, y (micro m)
+
 
 # -------------------------
 # GPIO setup
@@ -220,7 +225,7 @@ def api_move_xy():
 
     x_steps = int(data.get("x_steps", 0))
     y_steps = int(data.get("y_steps", 0))
-    delay_us = int(data.get("delay_us", 3000))
+    delay_us = int(data.get("delay_us", 2000))
     power = int(data.get("power", 70))
 
     command = {
@@ -378,7 +383,80 @@ def api_pictures():
         "success": succes
     })
     
+
+@app.route("/api/stitch", methods=["POST"])
+def api_stitch():
+    data = request.get_json(silent=True) or {}
+    points: list[float] = data.get("points", [])
+    foldername: str = data.get("folderName", "")
+
+    if not isinstance(points, list):
+        return jsonify({"error": "Invalid stitching points"}), 400
+    if len(points) < 6:
+        return jsonify({"error": "At least 6 stitching points are required"}), 400
     
+    steps = determine_stitch_square(points)
+    x_cor = 0
+    y_cor = 0
+    for i in range(len(steps)):
+        send_to_pico(steps[i])
+        time.sleep(6)
+        if steps[i]["axis"] == "x":
+            x_cor += 1
+        else:
+            y_cor += 1
+        path = os.path.join(foldername, f"{y_cor}{x_cor}")
+        ImageGrabAndSave.capture_single_image(4, path)
+                                              
+    return jsonify({
+        "ok": True,
+        "points": points
+    })
+
+
+def determine_stitch_square(points: list) -> list[dict[str, str | int]]:
+    steps: list[dict[str, str | int]] = []
+    x1, y1, x2, y2, x3, y3 = points
+    top_left: tuple[float, float] = (min(x1, x2, x3), max(y1, y2, y3))
+    bottom_right: tuple[float, float] = (max(x1, x2, x3), min(y1, y2, y3))
+    normalization_xy: tuple[float, float] = (0 - top_left[0], 0 - top_left[1])
+    top_left = (top_left[0] + normalization_xy[0], top_left[1] + normalization_xy[1])
+    bottom_right = ((bottom_right[0] + normalization_xy[0]), -(bottom_right[1] + normalization_xy[1]))
+
+    y_list = np.arange(0, bottom_right[1], camera_fov[1] - camera_fov[1] * required_overlap)
+    y_list = np.hstack((np.zeros(1), y_list)) #So you can do y[1] - y[0] without moving y at first
+    x_list = np.arange(0, bottom_right[0], camera_fov[0] - camera_fov[0] * required_overlap)
+
+    stepsize = 1/2048 * 1000 #micro m
+    for y in range(1, len(y_list)):
+        steps_in_direction = int((y_list[y] - y_list[y - 1])/stepsize)
+        steps.append({
+        "cmd": "move",
+        "axis": "y",
+        "steps": steps_in_direction,
+        "delay_us": 2000,
+        "power": 70})
+        steps_in_x = 0
+        for x in range(1, len(x_list)):
+            steps_in_direction = int((x_list[x] - x_list[x - 1])/stepsize)
+            steps.append({
+            "cmd": "move",
+            "axis": "x",
+            "steps": steps_in_direction,
+            "delay_us": 2000,
+            "power": 70
+            })
+            steps_in_x += steps_in_direction
+        steps.append({
+            "cmd": "move",
+            "axis": "x",
+            "steps": -steps_in_x,
+            "delay_us": 2000,
+            "power": 70
+            })
+        steps_in_x = 0
+    return steps
+
 
 if __name__ == "__main__":
     try:

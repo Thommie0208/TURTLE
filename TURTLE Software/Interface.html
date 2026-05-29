@@ -753,6 +753,7 @@
                     <div class="status-label">Point coordinates</div>
                     <div class="coordinate-value" id="stitching-status">No points set yet.</div>
                 </div>
+                <input id="stitch_folder" type="text" value="foldername" placeholder="stitch">
                 <button class="start-stitch-btn" onclick="startImageStitch()">Start image stitch</button>
             </div>
         </div>
@@ -1049,9 +1050,10 @@ function resetStitchingPoints() {
     log("Reset stitching points.");
 }
 
-function startImageStitch() {
+function startImageStitch(foldername) {
     postJSON("/api/stitch", {
-        points: stitchingPoints
+        points: stitchingPoints,
+        foldername: foldername
     });
     log("Started image stitching.");
 }
