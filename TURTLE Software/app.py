@@ -6,6 +6,7 @@ import os
 import RPi.GPIO as GPIO
 import ImageGrabAndSave
 import numpy as np
+import Image_Stitcher
 
 # -------------------------
 # Settings
@@ -401,21 +402,28 @@ def api_stitch():
         points.append(float(entry['y']))
         
     steps = determine_stitch_square(points)
-    x_cor = 0
-    y_cor = 0
+    x_tiles = 0
+    y_tiles = 0
+    total_tiles = 0
     for i in range(len(steps)):
         send_to_pico(json.dumps(steps[i]))
         time.sleep(6)
+        if steps[i]["steps"] < 0: #This is the command that returns the x to the start to start the next y line
+            continue
+            time.sleep(2)
         if steps[i]["axis"] == "x":
-            x_cor += 1
+            x_tiles += 1
         else:
-            y_cor += 1
-        path = os.path.join(foldername, f"{y_cor}{x_cor}")
+            y_tiles += 1
+        total_tiles += 1
+        path = os.path.join(foldername, f"{total_tiles}")
         ImageGrabAndSave.capture_single_image(4, path)
         time.sleep(2)
-                                              
+
+    Image_Stitcher.stitch(foldername, (x_tiles, y_tiles), "Stitched")
     return jsonify({
         "ok": True,
+        "foldername": foldername,
         "points": points
     })
 
