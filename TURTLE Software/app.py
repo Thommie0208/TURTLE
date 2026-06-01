@@ -6,6 +6,7 @@ import os
 import RPi.GPIO as GPIO
 import ImageGrabAndSave
 import numpy as np
+import Image_Stitcher
 
 # -------------------------
 # Settings
@@ -25,7 +26,7 @@ FILTER_POWER = 80
 # The app assumes the wheel starts on Filter 1
 current_filter = 1
 
-required_overlap = 10 #%
+required_overlap = 0.10 # fraction (10%)
 camera_fov: tuple[float, float] = (1.106*1000, 1.659*1000) #x, y (micro m)
 
 
@@ -387,35 +388,48 @@ def api_pictures():
 @app.route("/api/stitch", methods=["POST"])
 def api_stitch():
     data = request.get_json(silent=True) or {}
-    points: list[float] = data.get("points", [])
-    foldername: str = data.get("folderName", "")
-
-    if not isinstance(points, list):
-        return jsonify({"error": "Invalid stitching points"}), 400
-    if len(points) < 6:
-        return jsonify({"error": "At least 6 stitching points are required"}), 400
+    data_points: list[dict[str, str]] = data.get("points", []) #Format is list[dict[str, str]], being [timestamp:, x:, y:]
+    foldername: str = data.get("foldername", "")
+    output_type_list = ["raw", "jpeg", "bmp", "tiff", "png"]
     
-    steps = determine_stitch_square(points)
-    x_cor = 0
-    y_cor = 0
+    if not isinstance(data_points, list):
+        return jsonify({"error": "Invalid stitching points"}), 400
+    if len(data_points) < 3:
+        return jsonify(data_points), 400
+    
+    # Create the folder if it doesn't exist
+    if foldername and not os.path.exists(foldername):
+        os.makedirs(foldername, exist_ok=True)
+        
+    points = []
+    for entry in data_points:
+        points.append(float(entry['x']))
+        points.append(float(entry['y']))
+        
+    steps, x_tiles, y_tiles = determine_stitch_square(points)
+    total_tiles = 0
     for i in range(len(steps)):
-        send_to_pico(steps[i])
+        send_to_pico(json.dumps(steps[i]))
         time.sleep(6)
-        if steps[i]["axis"] == "x":
-            x_cor += 1
-        else:
-            y_cor += 1
-        path = os.path.join(foldername, f"{y_cor}{x_cor}")
+        if steps[i]["steps"] < 0: #This is the command that returns the x to the start to start the next y line
+            time.sleep(2)
+            continue
+        total_tiles += 1
+        path = os.path.join(foldername, f"{total_tiles}")
         ImageGrabAndSave.capture_single_image(4, path)
         time.sleep(2)
-                                              
+    Image_Stitcher.stitch(foldername, (x_tiles, y_tiles), output_type_list[4])
     return jsonify({
         "ok": True,
-        "points": points
+        "foldername": foldername,
+        "points": points,
+        "tiles_x": x_tiles,
+        "tiles_y": y_tiles,
+        "total_images": total_tiles
     })
 
 
-def determine_stitch_square(points: list) -> list[dict[str, str | int]]:
+def determine_stitch_square(points: list[float]) -> tuple[list[dict[str, str | int]], int, int]:
     steps: list[dict[str, str | int]] = []
     x1, y1, x2, y2, x3, y3 = points
     top_left: tuple[float, float] = (min(x1, x2, x3), max(y1, y2, y3))
@@ -423,14 +437,18 @@ def determine_stitch_square(points: list) -> list[dict[str, str | int]]:
     normalization_xy: tuple[float, float] = (0 - top_left[0], 0 - top_left[1])
     top_left = (top_left[0] + normalization_xy[0], top_left[1] + normalization_xy[1])
     bottom_right = ((bottom_right[0] + normalization_xy[0]), -(bottom_right[1] + normalization_xy[1]))
-
-    y_list = np.arange(0, bottom_right[1], camera_fov[1] - camera_fov[1] * required_overlap)
-    y_list = np.hstack((np.zeros(1), y_list)) #So you can do y[1] - y[0] without moving y at first
-    x_list = np.arange(0, bottom_right[0], camera_fov[0] - camera_fov[0] * required_overlap)
-
+    
+    tiles_in_x = int((bottom_right[0] - top_left[0]) / (camera_fov[0] * (1 - required_overlap))) + 1
+    tiles_in_y = int((bottom_right[1] - top_left[1]) / (camera_fov[1] * (1 - required_overlap))) + 1
+    print(f"tiles in x: {tiles_in_x}, tiles in y: {tiles_in_y}")
     stepsize = 1/2048 * 1000 #micro m
-    for y in range(1, len(y_list)):
-        steps_in_direction = int((y_list[y] - y_list[y - 1])/stepsize)
+    y = camera_fov[1] * (1 - required_overlap)
+    x = camera_fov[0] * (1 - required_overlap)
+    while y <= bottom_right[1]:
+        steps_in_direction = 0
+        if steps:
+            steps_in_direction = int(camera_fov[1]* (1 - required_overlap)/stepsize)
+            y += steps_in_direction * stepsize
         steps.append({
         "cmd": "move",
         "axis": "y",
@@ -438,8 +456,9 @@ def determine_stitch_square(points: list) -> list[dict[str, str | int]]:
         "delay_us": 2000,
         "power": 70})
         steps_in_x = 0
-        for x in range(1, len(x_list)):
-            steps_in_direction = int((x_list[x] - x_list[x - 1])/stepsize)
+        while x <= bottom_right[0]:
+            steps_in_direction = int(camera_fov[0]* (1 - required_overlap)/stepsize)
+            x += steps_in_direction * stepsize
             steps.append({
             "cmd": "move",
             "axis": "x",
@@ -456,7 +475,8 @@ def determine_stitch_square(points: list) -> list[dict[str, str | int]]:
             "power": 70
             })
         steps_in_x = 0
-    return steps
+        x = camera_fov[0] * (1 - required_overlap)
+    return steps, tiles_in_x, tiles_in_y
 
 @app.route("/api/stack", methods=["POST"])
 def api_stack():
@@ -485,7 +505,7 @@ def api_stack():
         
     sleeptime = (((z_end - z_start)/z_steps) * 45) / 10000 # Based on the measurement of 1 cm taking 45 seconds.
     for i, step in enumerate(steps):
-        send_to_pico(step)
+        send_to_pico(json.dumps(step))
         time.sleep(sleeptime)
         path = os.path.join(foldername, f"{i}")
         ImageGrabAndSave.capture_single_image(4, path)
