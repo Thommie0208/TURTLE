@@ -389,7 +389,7 @@ def api_pictures():
 def api_stitch():
     data = request.get_json(silent=True) or {}
     data_points: list[dict[str, str]] = data.get("points", []) #Format is list[dict[str, str]], being [timestamp:, x:, y:]
-    foldername: str = data.get("folderName", "")
+    foldername: str = data.get("foldername", "")
     output_type_list = ["raw", "jpeg", "bmp", "tiff", "png"]
     
     if not isinstance(data_points, list):
