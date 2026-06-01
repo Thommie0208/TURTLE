@@ -23,8 +23,8 @@ def stitch(path, tiles, extension):
 
     expected_number = tiles_x * tiles_y
 
-    print(f"Found {len(image_paths)} images.")
-    print(f"Expected {expected_number} images.")
+    # print(f"Found {len(image_paths)} images.")
+    # print(f"Expected {expected_number} images.")
 
     if len(image_paths) != expected_number:
         raise ValueError(
@@ -78,8 +78,8 @@ def stitch(path, tiles, extension):
     print("Smoothing seams...")
     mosaic.smooth_seams()
 
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    output_path = os.path.join(script_dir, output_name)
+    # script_dir = os.path.dirname(os.path.abspath(__file__))
+    output_path = os.path.join(path, output_name)
 
     print("Saving mosaic...")
     mosaic.save(output_path)
