@@ -25,7 +25,7 @@ FILTER_POWER = 80
 # The app assumes the wheel starts on Filter 1
 current_filter = 1
 
-required_overlap = 10 #%
+required_overlap = 0.10 # fraction (10%)
 camera_fov: tuple[float, float] = (1.106*1000, 1.659*1000) #x, y (micro m)
 
 
@@ -387,13 +387,13 @@ def api_pictures():
 @app.route("/api/stitch", methods=["POST"])
 def api_stitch():
     data = request.get_json(silent=True) or {}
-    data_points: list[float] = data.get("points", []) #Format is list[dict[str, str]], being [timestamp:, x:, y:]
+    data_points: list[dict[str, str]] = data.get("points", []) #Format is list[dict[str, str]], being [timestamp:, x:, y:]
     foldername: str = data.get("folderName", "")
     
     if not isinstance(data_points, list):
         return jsonify({"error": "Invalid stitching points"}), 400
     if len(data_points) < 3:
-        return jsonify(points), 400
+        return jsonify(data_points), 400
         
     points = []
     for entry in data_points:
@@ -403,9 +403,8 @@ def api_stitch():
     steps = determine_stitch_square(points)
     x_cor = 0
     y_cor = 0
-    return jsonify(steps)
     for i in range(len(steps)):
-        send_to_pico(steps[i])
+        send_to_pico(json.dumps(steps[i]))
         time.sleep(6)
         if steps[i]["axis"] == "x":
             x_cor += 1
@@ -491,7 +490,7 @@ def api_stack():
         
     sleeptime = (((z_end - z_start)/z_steps) * 45) / 10000 # Based on the measurement of 1 cm taking 45 seconds.
     for i, step in enumerate(steps):
-        send_to_pico(step)
+        send_to_pico(json.dumps(step))
         time.sleep(sleeptime)
         path = os.path.join(foldername, f"{i}")
         ImageGrabAndSave.capture_single_image(4, path)

@@ -476,6 +476,9 @@ def handle_command(line):
     elif cmd == "release":
         release_all()
         reply({"ok": True})
+    
+    else:
+        reply({"ok": False, "error": "unknown command"})
 
 
 # -------------------------
