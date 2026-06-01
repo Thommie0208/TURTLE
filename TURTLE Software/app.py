@@ -396,6 +396,10 @@ def api_stitch():
         return jsonify({"error": "Invalid stitching points"}), 400
     if len(data_points) < 3:
         return jsonify(data_points), 400
+    
+    # Create the folder if it doesn't exist
+    if foldername and not os.path.exists(foldername):
+        os.makedirs(foldername, exist_ok=True)
         
     points = []
     for entry in data_points:
