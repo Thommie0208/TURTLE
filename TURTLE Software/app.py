@@ -402,25 +402,18 @@ def api_stitch():
         points.append(float(entry['x']))
         points.append(float(entry['y']))
         
-    steps = determine_stitch_square(points)
-    x_tiles = 0
-    y_tiles = 0
+    steps, x_tiles, y_tiles = determine_stitch_square(points)
     total_tiles = 0
     for i in range(len(steps)):
         send_to_pico(json.dumps(steps[i]))
         time.sleep(6)
-        if steps[i]["steps"] <= 0: #This is the command that returns the x to the start to start the next y line
+        if steps[0][i]["steps"] <= 0: #This is the command that returns the x to the start to start the next y line
             time.sleep(2)
             continue
-        if steps[i]["axis"] == "x":
-            x_tiles += 1
-        else:
-            y_tiles += 1
         total_tiles += 1
         path = os.path.join(foldername, f"{total_tiles}")
         ImageGrabAndSave.capture_single_image(4, path)
         time.sleep(2)
-
     Image_Stitcher.stitch(foldername, (x_tiles, y_tiles), "Stitched", output_type_list[4])
     return jsonify({
         "ok": True,
