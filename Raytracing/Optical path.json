@@ -1,0 +1,1953 @@
+{
+  "fileType": "web-optics-sim-workspace",
+  "version": 1,
+  "savedAtIso": "2026-06-01T20:00:27.336Z",
+  "app": "WebOpticsSim",
+  "payload": {
+    "scene": {
+      "worldMin": {
+        "x": 0,
+        "y": 0
+      },
+      "worldMax": {
+        "x": 1600,
+        "y": 900
+      },
+      "materials": [
+        {
+          "id": 0,
+          "name": "Air",
+          "ior": 1,
+          "dispersionModel": "constant",
+          "referenceWavelengthNm": 587.6,
+          "sellmeier": {
+            "b1": 0,
+            "b2": 0,
+            "b3": 0,
+            "c1": 1,
+            "c2": 1,
+            "c3": 1
+          }
+        },
+        {
+          "id": 1,
+          "name": "BK7",
+          "ior": 1.5168,
+          "dispersionModel": "sellmeier",
+          "referenceWavelengthNm": 587.6,
+          "sellmeier": {
+            "b1": 1.03961212,
+            "b2": 0.231792344,
+            "b3": 1.01046945,
+            "c1": 0.00600069867,
+            "c2": 0.0200179144,
+            "c3": 103.560653
+          }
+        },
+        {
+          "id": 2,
+          "name": "Water",
+          "ior": 1.333,
+          "dispersionModel": "constant",
+          "referenceWavelengthNm": 587.6,
+          "sellmeier": {
+            "b1": 0,
+            "b2": 0,
+            "b3": 0,
+            "c1": 1,
+            "c2": 1,
+            "c3": 1
+          }
+        },
+        {
+          "id": 3,
+          "name": "bs-1-BK7",
+          "ior": 1.5167984379050088,
+          "dispersionModel": "sellmeier",
+          "referenceWavelengthNm": 587.6,
+          "sellmeier": {
+            "b1": 1.03961212,
+            "b2": 0.231792344,
+            "b3": 1.01046945,
+            "c1": 0.00600069867,
+            "c2": 0.0200179144,
+            "c3": 103.560653
+          }
+        },
+        {
+          "id": 4,
+          "name": "ndf-1-BK7",
+          "ior": 1.5167984379050088,
+          "dispersionModel": "sellmeier",
+          "referenceWavelengthNm": 587.6,
+          "sellmeier": {
+            "b1": 1.03961212,
+            "b2": 0.231792344,
+            "b3": 1.01046945,
+            "c1": 0.00600069867,
+            "c2": 0.0200179144,
+            "c3": 103.560653
+          }
+        },
+        {
+          "id": 5,
+          "name": "bs-2-BK7",
+          "ior": 1.5167984379050088,
+          "dispersionModel": "sellmeier",
+          "referenceWavelengthNm": 587.6,
+          "sellmeier": {
+            "b1": 1.03961212,
+            "b2": 0.231792344,
+            "b3": 1.01046945,
+            "c1": 0.00600069867,
+            "c2": 0.0200179144,
+            "c3": 103.560653
+          }
+        },
+        {
+          "id": 6,
+          "name": "sla-1-custom-s1",
+          "ior": 1.56384,
+          "dispersionModel": "constant",
+          "referenceWavelengthNm": 587.6,
+          "sellmeier": {
+            "b1": 1.03961212,
+            "b2": 0.231792344,
+            "b3": 1.01046945,
+            "c1": 0.00600069867,
+            "c2": 0.0200179144,
+            "c3": 103.560653
+          }
+        },
+        {
+          "id": 7,
+          "name": "sla-1-custom-s3",
+          "ior": 1.54869,
+          "dispersionModel": "constant",
+          "referenceWavelengthNm": 587.6,
+          "sellmeier": {
+            "b1": 1.03961212,
+            "b2": 0.231792344,
+            "b3": 1.01046945,
+            "c1": 0.00600069867,
+            "c2": 0.0200179144,
+            "c3": 103.560653
+          }
+        },
+        {
+          "id": 8,
+          "name": "sla-1-custom-s4",
+          "ior": 1.48656,
+          "dispersionModel": "constant",
+          "referenceWavelengthNm": 587.6,
+          "sellmeier": {
+            "b1": 1.03961212,
+            "b2": 0.231792344,
+            "b3": 1.01046945,
+            "c1": 0.00600069867,
+            "c2": 0.0200179144,
+            "c3": 103.560653
+          }
+        },
+        {
+          "id": 9,
+          "name": "sla-1-custom-s6",
+          "ior": 1.618,
+          "dispersionModel": "constant",
+          "referenceWavelengthNm": 587.6,
+          "sellmeier": {
+            "b1": 1.03961212,
+            "b2": 0.231792344,
+            "b3": 1.01046945,
+            "c1": 0.00600069867,
+            "c2": 0.0200179144,
+            "c3": 103.560653
+          }
+        },
+        {
+          "id": 10,
+          "name": "sla-1-custom-s7",
+          "ior": 1.6393,
+          "dispersionModel": "constant",
+          "referenceWavelengthNm": 587.6,
+          "sellmeier": {
+            "b1": 1.03961212,
+            "b2": 0.231792344,
+            "b3": 1.01046945,
+            "c1": 0.00600069867,
+            "c2": 0.0200179144,
+            "c3": 103.560653
+          }
+        },
+        {
+          "id": 11,
+          "name": "sla-1-custom-s9",
+          "ior": 1.57309,
+          "dispersionModel": "constant",
+          "referenceWavelengthNm": 587.6,
+          "sellmeier": {
+            "b1": 1.03961212,
+            "b2": 0.231792344,
+            "b3": 1.01046945,
+            "c1": 0.00600069867,
+            "c2": 0.0200179144,
+            "c3": 103.560653
+          }
+        },
+        {
+          "id": 12,
+          "name": "sla-1-custom-s10",
+          "ior": 1.48656,
+          "dispersionModel": "constant",
+          "referenceWavelengthNm": 587.6,
+          "sellmeier": {
+            "b1": 1.03961212,
+            "b2": 0.231792344,
+            "b3": 1.01046945,
+            "c1": 0.00600069867,
+            "c2": 0.0200179144,
+            "c3": 103.560653
+          }
+        },
+        {
+          "id": 13,
+          "name": "sla-1-custom-s12",
+          "ior": 1.48656,
+          "dispersionModel": "constant",
+          "referenceWavelengthNm": 587.6,
+          "sellmeier": {
+            "b1": 1.03961212,
+            "b2": 0.231792344,
+            "b3": 1.01046945,
+            "c1": 0.00600069867,
+            "c2": 0.0200179144,
+            "c3": 103.560653
+          }
+        },
+        {
+          "id": 14,
+          "name": "sla-1-custom-s14",
+          "ior": 1.58144,
+          "dispersionModel": "constant",
+          "referenceWavelengthNm": 587.6,
+          "sellmeier": {
+            "b1": 1.03961212,
+            "b2": 0.231792344,
+            "b3": 1.01046945,
+            "c1": 0.00600069867,
+            "c2": 0.0200179144,
+            "c3": 103.560653
+          }
+        },
+        {
+          "id": 15,
+          "name": "spf-1-BK7",
+          "ior": 1.5167984379050088,
+          "dispersionModel": "sellmeier",
+          "referenceWavelengthNm": 587.6,
+          "sellmeier": {
+            "b1": 1.03961212,
+            "b2": 0.231792344,
+            "b3": 1.01046945,
+            "c1": 0.00600069867,
+            "c2": 0.0200179144,
+            "c3": 103.560653
+          }
+        }
+      ],
+      "optics": [
+        {
+          "id": "pm-1",
+          "name": "Planar Mirror",
+          "kind": "planar-mirror",
+          "pose": {
+            "origin": {
+              "x": 473.3927566207539,
+              "y": 492.3631809935159
+            },
+            "angleDeg": 90
+          },
+          "visible": true,
+          "locked": false,
+          "axisId": null,
+          "angleRelativeToAxis": false,
+          "axialOffset": 0,
+          "lateralOffset": 0,
+          "optical": {
+            "refractiveIndex": 1.0001,
+            "materialPresetId": "custom",
+            "dispersionModel": "constant",
+            "referenceWavelengthNm": 587.6,
+            "sellmeier": {
+              "b1": 1.03961212,
+              "b2": 0.231792344,
+              "b3": 1.01046945,
+              "c1": 0.00600069867,
+              "c2": 0.0200179144,
+              "c3": 103.560653
+            }
+          },
+          "outsideMaterialId": 0,
+          "length": 25.4,
+          "normalSign": 1,
+          "reflectedAxisFlipped": false,
+          "axisReferenceEnd": "start",
+          "axisPosition": null
+        },
+        {
+          "id": "pm-2",
+          "name": "Planar Mirror",
+          "kind": "planar-mirror",
+          "pose": {
+            "origin": {
+              "x": 615.3779077289973,
+              "y": 493.0709429596307
+            },
+            "angleDeg": 135
+          },
+          "visible": true,
+          "locked": false,
+          "axisId": null,
+          "angleRelativeToAxis": false,
+          "axialOffset": 0,
+          "lateralOffset": 0,
+          "optical": {
+            "refractiveIndex": 1.0001,
+            "materialPresetId": "custom",
+            "dispersionModel": "constant",
+            "referenceWavelengthNm": 587.6,
+            "sellmeier": {
+              "b1": 1.03961212,
+              "b2": 0.231792344,
+              "b3": 1.01046945,
+              "c1": 0.00600069867,
+              "c2": 0.0200179144,
+              "c3": 103.560653
+            }
+          },
+          "outsideMaterialId": 0,
+          "length": 25.4,
+          "normalSign": 1,
+          "reflectedAxisFlipped": false,
+          "axisReferenceEnd": "start",
+          "axisPosition": null
+        },
+        {
+          "id": "pm-3",
+          "name": "Planar Mirror",
+          "kind": "planar-mirror",
+          "pose": {
+            "origin": {
+              "x": 534.0934785736528,
+              "y": 395.8890996134019
+            },
+            "angleDeg": 45
+          },
+          "visible": true,
+          "locked": false,
+          "axisId": "axis-1",
+          "angleRelativeToAxis": true,
+          "axialOffset": 0,
+          "lateralOffset": 0,
+          "optical": {
+            "refractiveIndex": 1.0001,
+            "materialPresetId": "custom",
+            "dispersionModel": "constant",
+            "referenceWavelengthNm": 587.6,
+            "sellmeier": {
+              "b1": 1.03961212,
+              "b2": 0.231792344,
+              "b3": 1.01046945,
+              "c1": 0.00600069867,
+              "c2": 0.0200179144,
+              "c3": 103.560653
+            }
+          },
+          "outsideMaterialId": 0,
+          "length": 25.4,
+          "normalSign": 1,
+          "reflectedAxisFlipped": false,
+          "axisReferenceEnd": "start",
+          "axisPosition": 0.09746665778447478
+        },
+        {
+          "id": "pm-4",
+          "name": "Planar Mirror",
+          "kind": "planar-mirror",
+          "pose": {
+            "origin": {
+              "x": 534.0527350909838,
+              "y": 450
+            },
+            "angleDeg": 45
+          },
+          "visible": true,
+          "locked": false,
+          "axisId": "ax0",
+          "angleRelativeToAxis": true,
+          "axialOffset": 0,
+          "lateralOffset": 0,
+          "optical": {
+            "refractiveIndex": 1.0001,
+            "materialPresetId": "custom",
+            "dispersionModel": "constant",
+            "referenceWavelengthNm": 587.6,
+            "sellmeier": {
+              "b1": 1.03961212,
+              "b2": 0.231792344,
+              "b3": 1.01046945,
+              "c1": 0.00600069867,
+              "c2": 0.0200179144,
+              "c3": 103.560653
+            }
+          },
+          "outsideMaterialId": 0,
+          "length": 25.4,
+          "normalSign": 1,
+          "reflectedAxisFlipped": false,
+          "axisReferenceEnd": "start",
+          "axisPosition": -165.9472649090162
+        },
+        {
+          "id": "bs-1",
+          "name": "Beam Splitter",
+          "kind": "beam-splitter",
+          "pose": {
+            "origin": {
+              "x": 615.3779077289973,
+              "y": 450
+            },
+            "angleDeg": 135
+          },
+          "visible": true,
+          "locked": false,
+          "axisId": "ax0",
+          "angleRelativeToAxis": true,
+          "axialOffset": 0,
+          "lateralOffset": 0,
+          "optical": {
+            "refractiveIndex": 1.5167984379050088,
+            "materialPresetId": "bk7",
+            "dispersionModel": "sellmeier",
+            "referenceWavelengthNm": 587.6,
+            "sellmeier": {
+              "b1": 1.03961212,
+              "b2": 0.231792344,
+              "b3": 1.01046945,
+              "c1": 0.00600069867,
+              "c2": 0.0200179144,
+              "c3": 103.560653
+            }
+          },
+          "outsideMaterialId": 0,
+          "splitterType": "cube",
+          "size": 25.4,
+          "thickness": 5,
+          "splitReflectPct": 50,
+          "normalSign": 1,
+          "internalMaterialId": 3,
+          "spectralMode": "none",
+          "cutoffNm": 550,
+          "reflectedAxisFlipped": false,
+          "axisReferenceEnd": "start",
+          "axisPosition": -84.62209227100266
+        },
+        {
+          "id": "ndf-1",
+          "name": "ND Filter",
+          "kind": "nd-filter",
+          "pose": {
+            "origin": {
+              "x": 645.8230990008358,
+              "y": 450
+            },
+            "angleDeg": 90
+          },
+          "visible": true,
+          "locked": false,
+          "axisId": "ax0",
+          "angleRelativeToAxis": true,
+          "axialOffset": 0,
+          "lateralOffset": 0,
+          "optical": {
+            "refractiveIndex": 1.5167984379050088,
+            "materialPresetId": "bk7",
+            "dispersionModel": "sellmeier",
+            "referenceWavelengthNm": 587.6,
+            "sellmeier": {
+              "b1": 1.03961212,
+              "b2": 0.231792344,
+              "b3": 1.01046945,
+              "c1": 0.00600069867,
+              "c2": 0.0200179144,
+              "c3": 103.560653
+            }
+          },
+          "outsideMaterialId": 0,
+          "size": 25.4,
+          "thickness": 1.5,
+          "opticalDensity": 0.2,
+          "internalMaterialId": 4,
+          "axisReferenceEnd": "start",
+          "axisPosition": -54.17690099916422
+        },
+        {
+          "id": "bs-2",
+          "name": "Beam Splitter",
+          "kind": "beam-splitter",
+          "pose": {
+            "origin": {
+              "x": 775.9194831135164,
+              "y": 450
+            },
+            "angleDeg": 135
+          },
+          "visible": true,
+          "locked": false,
+          "axisId": "ax0",
+          "angleRelativeToAxis": true,
+          "axialOffset": 0,
+          "lateralOffset": 0,
+          "optical": {
+            "refractiveIndex": 1.5167984379050088,
+            "materialPresetId": "bk7",
+            "dispersionModel": "sellmeier",
+            "referenceWavelengthNm": 587.6,
+            "sellmeier": {
+              "b1": 1.03961212,
+              "b2": 0.231792344,
+              "b3": 1.01046945,
+              "c1": 0.00600069867,
+              "c2": 0.0200179144,
+              "c3": 103.560653
+            }
+          },
+          "outsideMaterialId": 0,
+          "splitterType": "dichroic",
+          "size": 25.4,
+          "thickness": 1,
+          "splitReflectPct": 50,
+          "normalSign": 1,
+          "internalMaterialId": 5,
+          "spectralMode": "lowpass",
+          "cutoffNm": 620,
+          "reflectedAxisFlipped": false,
+          "axisReferenceEnd": "start",
+          "axisPosition": 75.91948311351643
+        },
+        {
+          "id": "pm-5",
+          "name": "Planar Mirror",
+          "kind": "planar-mirror",
+          "pose": {
+            "origin": {
+              "x": 775.2200730494586,
+              "y": 404.5349149685264
+            },
+            "angleDeg": 225
+          },
+          "visible": true,
+          "locked": false,
+          "axisId": "axis-4",
+          "angleRelativeToAxis": true,
+          "axialOffset": 0,
+          "lateralOffset": 0,
+          "optical": {
+            "refractiveIndex": 1.0001,
+            "materialPresetId": "custom",
+            "dispersionModel": "constant",
+            "referenceWavelengthNm": 587.6,
+            "sellmeier": {
+              "b1": 1.03961212,
+              "b2": 0.231792344,
+              "b3": 1.01046945,
+              "c1": 0.00600069867,
+              "c2": 0.0200179144,
+              "c3": 103.560653
+            }
+          },
+          "outsideMaterialId": 0,
+          "length": 25.4,
+          "normalSign": 1,
+          "reflectedAxisFlipped": false,
+          "axisReferenceEnd": "start",
+          "axisPosition": 45.46508503147362
+        },
+        {
+          "id": "sla-1",
+          "name": "Objective 0.4NA 20x",
+          "kind": "sequential-lens-assembly",
+          "pose": {
+            "origin": {
+              "x": 716.0628966267827,
+              "y": 404.5349149685264
+            },
+            "angleDeg": 0
+          },
+          "visible": true,
+          "locked": false,
+          "axisId": "axis-5",
+          "angleRelativeToAxis": true,
+          "axialOffset": 0,
+          "lateralOffset": 0,
+          "optical": {
+            "refractiveIndex": 1.0001,
+            "materialPresetId": "custom",
+            "dispersionModel": "constant",
+            "referenceWavelengthNm": 587.6,
+            "sellmeier": {
+              "b1": 1.03961212,
+              "b2": 0.231792344,
+              "b3": 1.01046945,
+              "c1": 0.00600069867,
+              "c2": 0.0200179144,
+              "c3": 103.560653
+            }
+          },
+          "outsideMaterialId": 0,
+          "edgeBehavior": "absorbing",
+          "surfaces": [
+            {
+              "type": "spherical",
+              "diameter": 5,
+              "thicknessToNext": 2.21,
+              "radius": 8.33,
+              "conicConstant": 0,
+              "a4": 0,
+              "a6": 0,
+              "a8": 0,
+              "materialId": 6,
+              "optical": {
+                "refractiveIndex": 1.56384,
+                "materialPresetId": "custom",
+                "dispersionModel": "constant",
+                "referenceWavelengthNm": 587.6,
+                "sellmeier": {
+                  "b1": 1.03961212,
+                  "b2": 0.231792344,
+                  "b3": 1.01046945,
+                  "c1": 0.00600069867,
+                  "c2": 0.0200179144,
+                  "c3": 103.560653
+                }
+              }
+            },
+            {
+              "type": "spherical",
+              "diameter": 7,
+              "thicknessToNext": 0.15,
+              "radius": 5.1,
+              "conicConstant": 0,
+              "a4": 0,
+              "a6": 0,
+              "a8": 0,
+              "materialId": 0,
+              "optical": {
+                "refractiveIndex": 1,
+                "materialPresetId": "air",
+                "dispersionModel": "sellmeier",
+                "referenceWavelengthNm": 587.6,
+                "sellmeier": {
+                  "b1": 0,
+                  "b2": 0,
+                  "b3": 0,
+                  "c1": 1,
+                  "c2": 1,
+                  "c3": 1
+                }
+              }
+            },
+            {
+              "type": "spherical",
+              "diameter": 7,
+              "thicknessToNext": 1.02,
+              "radius": -26.222,
+              "conicConstant": 0,
+              "a4": 0,
+              "a6": 0,
+              "a8": 0,
+              "materialId": 7,
+              "optical": {
+                "refractiveIndex": 1.54869,
+                "materialPresetId": "custom",
+                "dispersionModel": "constant",
+                "referenceWavelengthNm": 587.6,
+                "sellmeier": {
+                  "b1": 1.03961212,
+                  "b2": 0.231792344,
+                  "b3": 1.01046945,
+                  "c1": 0.00600069867,
+                  "c2": 0.0200179144,
+                  "c3": 103.560653
+                }
+              }
+            },
+            {
+              "type": "spherical",
+              "diameter": 7,
+              "thicknessToNext": 2.33,
+              "radius": -12.17,
+              "conicConstant": 0,
+              "a4": 0,
+              "a6": 0,
+              "a8": 0,
+              "materialId": 8,
+              "optical": {
+                "refractiveIndex": 1.48656,
+                "materialPresetId": "custom",
+                "dispersionModel": "constant",
+                "referenceWavelengthNm": 587.6,
+                "sellmeier": {
+                  "b1": 1.03961212,
+                  "b2": 0.231792344,
+                  "b3": 1.01046945,
+                  "c1": 0.00600069867,
+                  "c2": 0.0200179144,
+                  "c3": 103.560653
+                }
+              }
+            },
+            {
+              "type": "spherical",
+              "diameter": 7,
+              "thicknessToNext": 0.37,
+              "radius": 11.28,
+              "conicConstant": 0,
+              "a4": 0,
+              "a6": 0,
+              "a8": 0,
+              "materialId": 0,
+              "optical": {
+                "refractiveIndex": 1,
+                "materialPresetId": "air",
+                "dispersionModel": "sellmeier",
+                "referenceWavelengthNm": 587.6,
+                "sellmeier": {
+                  "b1": 0,
+                  "b2": 0,
+                  "b3": 0,
+                  "c1": 1,
+                  "c2": 1,
+                  "c3": 1
+                }
+              }
+            },
+            {
+              "type": "spherical",
+              "diameter": 7,
+              "thicknessToNext": 3.46,
+              "radius": -7.85,
+              "conicConstant": 0,
+              "a4": 0,
+              "a6": 0,
+              "a8": 0,
+              "materialId": 9,
+              "optical": {
+                "refractiveIndex": 1.618,
+                "materialPresetId": "custom",
+                "dispersionModel": "constant",
+                "referenceWavelengthNm": 587.6,
+                "sellmeier": {
+                  "b1": 1.03961212,
+                  "b2": 0.231792344,
+                  "b3": 1.01046945,
+                  "c1": 0.00600069867,
+                  "c2": 0.0200179144,
+                  "c3": 103.560653
+                }
+              }
+            },
+            {
+              "type": "spherical",
+              "diameter": 7,
+              "thicknessToNext": 3.07,
+              "radius": 9.58,
+              "conicConstant": 0,
+              "a4": 0,
+              "a6": 0,
+              "a8": 0,
+              "materialId": 10,
+              "optical": {
+                "refractiveIndex": 1.6393,
+                "materialPresetId": "custom",
+                "dispersionModel": "constant",
+                "referenceWavelengthNm": 587.6,
+                "sellmeier": {
+                  "b1": 1.03961212,
+                  "b2": 0.231792344,
+                  "b3": 1.01046945,
+                  "c1": 0.00600069867,
+                  "c2": 0.0200179144,
+                  "c3": 103.560653
+                }
+              }
+            },
+            {
+              "type": "spherical",
+              "diameter": 5,
+              "thicknessToNext": 3.2,
+              "radius": -4.29,
+              "conicConstant": 0,
+              "a4": 0,
+              "a6": 0,
+              "a8": 0,
+              "materialId": 0,
+              "optical": {
+                "refractiveIndex": 1,
+                "materialPresetId": "air",
+                "dispersionModel": "sellmeier",
+                "referenceWavelengthNm": 587.6,
+                "sellmeier": {
+                  "b1": 0,
+                  "b2": 0,
+                  "b3": 0,
+                  "c1": 1,
+                  "c2": 1,
+                  "c3": 1
+                }
+              }
+            },
+            {
+              "type": "spherical",
+              "diameter": 5,
+              "thicknessToNext": 0.99,
+              "radius": 3.71,
+              "conicConstant": 0,
+              "a4": 0,
+              "a6": 0,
+              "a8": 0,
+              "materialId": 11,
+              "optical": {
+                "refractiveIndex": 1.57309,
+                "materialPresetId": "custom",
+                "dispersionModel": "constant",
+                "referenceWavelengthNm": 587.6,
+                "sellmeier": {
+                  "b1": 1.03961212,
+                  "b2": 0.231792344,
+                  "b3": 1.01046945,
+                  "c1": 0.00600069867,
+                  "c2": 0.0200179144,
+                  "c3": 103.560653
+                }
+              }
+            },
+            {
+              "type": "spherical",
+              "diameter": 10,
+              "thicknessToNext": 4.05,
+              "radius": -23.38,
+              "conicConstant": 0,
+              "a4": 0,
+              "a6": 0,
+              "a8": 0,
+              "materialId": 12,
+              "optical": {
+                "refractiveIndex": 1.48656,
+                "materialPresetId": "custom",
+                "dispersionModel": "constant",
+                "referenceWavelengthNm": 587.6,
+                "sellmeier": {
+                  "b1": 1.03961212,
+                  "b2": 0.231792344,
+                  "b3": 1.01046945,
+                  "c1": 0.00600069867,
+                  "c2": 0.0200179144,
+                  "c3": 103.560653
+                }
+              }
+            },
+            {
+              "type": "spherical",
+              "diameter": 10,
+              "thicknessToNext": 0.25,
+              "radius": 6.11,
+              "conicConstant": 0,
+              "a4": 0,
+              "a6": 0,
+              "a8": 0,
+              "materialId": 0,
+              "optical": {
+                "refractiveIndex": 1,
+                "materialPresetId": "air",
+                "dispersionModel": "sellmeier",
+                "referenceWavelengthNm": 587.6,
+                "sellmeier": {
+                  "b1": 0,
+                  "b2": 0,
+                  "b3": 0,
+                  "c1": 1,
+                  "c2": 1,
+                  "c3": 1
+                }
+              }
+            },
+            {
+              "type": "spherical",
+              "diameter": 12,
+              "thicknessToNext": 3.3,
+              "radius": -16.96,
+              "conicConstant": 0,
+              "a4": 0,
+              "a6": 0,
+              "a8": 0,
+              "materialId": 13,
+              "optical": {
+                "refractiveIndex": 1.48656,
+                "materialPresetId": "custom",
+                "dispersionModel": "constant",
+                "referenceWavelengthNm": 587.6,
+                "sellmeier": {
+                  "b1": 1.03961212,
+                  "b2": 0.231792344,
+                  "b3": 1.01046945,
+                  "c1": 0.00600069867,
+                  "c2": 0.0200179144,
+                  "c3": 103.560653
+                }
+              }
+            },
+            {
+              "type": "spherical",
+              "diameter": 12,
+              "thicknessToNext": 7,
+              "radius": 18.95,
+              "conicConstant": 0,
+              "a4": 0,
+              "a6": 0,
+              "a8": 0,
+              "materialId": 0,
+              "optical": {
+                "refractiveIndex": 1,
+                "materialPresetId": "air",
+                "dispersionModel": "sellmeier",
+                "referenceWavelengthNm": 587.6,
+                "sellmeier": {
+                  "b1": 0,
+                  "b2": 0,
+                  "b3": 0,
+                  "c1": 1,
+                  "c2": 1,
+                  "c3": 1
+                }
+              }
+            },
+            {
+              "type": "spherical",
+              "diameter": 12,
+              "thicknessToNext": 4.27,
+              "radius": -10.15,
+              "conicConstant": 0,
+              "a4": 0,
+              "a6": 0,
+              "a8": 0,
+              "materialId": 14,
+              "optical": {
+                "refractiveIndex": 1.58144,
+                "materialPresetId": "custom",
+                "dispersionModel": "constant",
+                "referenceWavelengthNm": 587.6,
+                "sellmeier": {
+                  "b1": 1.03961212,
+                  "b2": 0.231792344,
+                  "b3": 1.01046945,
+                  "c1": 0.00600069867,
+                  "c2": 0.0200179144,
+                  "c3": 103.560653
+                }
+              }
+            },
+            {
+              "type": "spherical",
+              "diameter": 10,
+              "thicknessToNext": 0,
+              "radius": -7.1,
+              "conicConstant": 0,
+              "a4": 0,
+              "a6": 0,
+              "a8": 0,
+              "materialId": 0,
+              "optical": {
+                "refractiveIndex": 1,
+                "materialPresetId": "custom",
+                "dispersionModel": "constant",
+                "referenceWavelengthNm": 587.6,
+                "sellmeier": {
+                  "b1": 1.03961212,
+                  "b2": 0.231792344,
+                  "b3": 1.01046945,
+                  "c1": 0.00600069867,
+                  "c2": 0.0200179144,
+                  "c3": 103.560653
+                }
+              }
+            }
+          ],
+          "axisReferenceEnd": "start",
+          "axisPosition": 59.15717642267589
+        },
+        {
+          "id": "pm-6",
+          "name": "Planar Mirror",
+          "kind": "planar-mirror",
+          "pose": {
+            "origin": {
+              "x": 775.2200730494586,
+              "y": 479.130599643802
+            },
+            "angleDeg": 135
+          },
+          "visible": true,
+          "locked": false,
+          "axisId": "axis-4",
+          "angleRelativeToAxis": true,
+          "axialOffset": 0,
+          "lateralOffset": 0,
+          "optical": {
+            "refractiveIndex": 1.0001,
+            "materialPresetId": "custom",
+            "dispersionModel": "constant",
+            "referenceWavelengthNm": 587.6,
+            "sellmeier": {
+              "b1": 1.03961212,
+              "b2": 0.231792344,
+              "b3": 1.01046945,
+              "c1": 0.00600069867,
+              "c2": 0.0200179144,
+              "c3": 103.560653
+            }
+          },
+          "outsideMaterialId": 0,
+          "length": 25.4,
+          "normalSign": 1,
+          "reflectedAxisFlipped": false,
+          "axisReferenceEnd": "start",
+          "axisPosition": -29.130599643801986
+        },
+        {
+          "id": "det-1",
+          "name": "Detector Plane",
+          "kind": "detector",
+          "pose": {
+            "origin": {
+              "x": 661.3101151556999,
+              "y": 479.130599643802
+            },
+            "angleDeg": 90
+          },
+          "visible": true,
+          "locked": false,
+          "axisId": "axis-6",
+          "angleRelativeToAxis": true,
+          "axialOffset": 0,
+          "lateralOffset": 0,
+          "optical": {
+            "refractiveIndex": 1.0001,
+            "materialPresetId": "custom",
+            "dispersionModel": "constant",
+            "referenceWavelengthNm": 587.6,
+            "sellmeier": {
+              "b1": 1.03961212,
+              "b2": 0.231792344,
+              "b3": 1.01046945,
+              "c1": 0.00600069867,
+              "c2": 0.0200179144,
+              "c3": 103.560653
+            }
+          },
+          "outsideMaterialId": 0,
+          "length": 30,
+          "sampleBins": 64,
+          "axisReferenceEnd": "start",
+          "axisPosition": -113.9099578937587
+        },
+        {
+          "id": "blk-1",
+          "name": "Opaque Blocker",
+          "kind": "opaque-blocker",
+          "pose": {
+            "origin": {
+              "x": 661.3101151556999,
+              "y": 479.130599643802
+            },
+            "angleDeg": 90
+          },
+          "visible": true,
+          "locked": false,
+          "axisId": null,
+          "angleRelativeToAxis": false,
+          "axialOffset": 0,
+          "lateralOffset": 0,
+          "optical": {
+            "refractiveIndex": 1.0001,
+            "materialPresetId": "custom",
+            "dispersionModel": "constant",
+            "referenceWavelengthNm": 587.6,
+            "sellmeier": {
+              "b1": 1.03961212,
+              "b2": 0.231792344,
+              "b3": 1.01046945,
+              "c1": 0.00600069867,
+              "c2": 0.0200179144,
+              "c3": 103.560653
+            }
+          },
+          "outsideMaterialId": 0,
+          "length": 30,
+          "axisReferenceEnd": "start",
+          "axisPosition": null
+        },
+        {
+          "id": "spf-1",
+          "name": "Spectral Filter",
+          "kind": "spectral-filter",
+          "pose": {
+            "origin": {
+              "x": 737.0214868921539,
+              "y": 479.130599643802
+            },
+            "angleDeg": 90
+          },
+          "visible": true,
+          "locked": false,
+          "axisId": "axis-6",
+          "angleRelativeToAxis": true,
+          "axialOffset": 0,
+          "lateralOffset": 0,
+          "optical": {
+            "refractiveIndex": 1.5167984379050088,
+            "materialPresetId": "bk7",
+            "dispersionModel": "sellmeier",
+            "referenceWavelengthNm": 587.6,
+            "sellmeier": {
+              "b1": 1.03961212,
+              "b2": 0.231792344,
+              "b3": 1.01046945,
+              "c1": 0.00600069867,
+              "c2": 0.0200179144,
+              "c3": 103.560653
+            }
+          },
+          "outsideMaterialId": 0,
+          "filterType": "longpass",
+          "size": 25.4,
+          "thickness": 3,
+          "ultraThin": false,
+          "normalSign": 1,
+          "internalMaterialId": 15,
+          "centerWavelengthNm": 602,
+          "bandwidthNm": 20,
+          "cutonNm": 600,
+          "cutoffNm": 500,
+          "axisReferenceEnd": "start",
+          "axisPosition": -38.1985861573047
+        }
+      ],
+      "axes": [
+        {
+          "id": "ax0",
+          "name": "Axis 0",
+          "index": 0,
+          "a": {
+            "x": 700,
+            "y": 450
+          },
+          "b": {
+            "x": 900,
+            "y": 450
+          },
+          "parameterMode": "endpoints",
+          "keepLengthFixed": false,
+          "keepAngleFixed": false,
+          "visible": true,
+          "locked": false,
+          "branchNodeId": null,
+          "branchRelativeAngleDeg": null,
+          "branchLength": null,
+          "axisReferenceEnd": "start",
+          "axisPosition": null
+        },
+        {
+          "id": "axis-1",
+          "name": "Axis 1",
+          "index": 1,
+          "a": {
+            "x": 534.0935519623772,
+            "y": 395.7916329832469
+          },
+          "b": {
+            "x": 534.0527350909838,
+            "y": 450
+          },
+          "parameterMode": "endpoints",
+          "keepLengthFixed": false,
+          "keepAngleFixed": false,
+          "axisId": null,
+          "axisPosition": null,
+          "axisReferenceEnd": "start",
+          "branchNodeId": null,
+          "branchRelativeAngleDeg": null,
+          "branchLength": null,
+          "visible": true,
+          "locked": false
+        },
+        {
+          "id": "axis-2",
+          "name": "Axis 2",
+          "index": 2,
+          "a": {
+            "x": 615.3779077289973,
+            "y": 493.0709429596307
+          },
+          "b": {
+            "x": 615.3779077289973,
+            "y": 449.97286629624955
+          },
+          "parameterMode": "length-angle",
+          "keepLengthFixed": false,
+          "keepAngleFixed": false,
+          "axisId": null,
+          "axisPosition": null,
+          "axisReferenceEnd": "start",
+          "branchNodeId": null,
+          "branchRelativeAngleDeg": null,
+          "branchLength": null,
+          "visible": true,
+          "locked": false
+        },
+        {
+          "id": "axis-3",
+          "name": "Axis 3",
+          "index": 3,
+          "a": {
+            "x": 473.3927566207539,
+            "y": 492.3631809935159
+          },
+          "b": {
+            "x": 615.3796717299688,
+            "y": 492.3631809935159
+          },
+          "parameterMode": "length-angle",
+          "keepLengthFixed": false,
+          "keepAngleFixed": false,
+          "axisId": null,
+          "axisPosition": null,
+          "axisReferenceEnd": "start",
+          "branchNodeId": null,
+          "branchRelativeAngleDeg": null,
+          "branchLength": null,
+          "visible": true,
+          "locked": false
+        },
+        {
+          "id": "axis-4",
+          "name": "Axis 4",
+          "index": 4,
+          "a": {
+            "x": 775.2200730494586,
+            "y": 450
+          },
+          "b": {
+            "x": 775.2200730494586,
+            "y": 400
+          },
+          "parameterMode": "endpoints",
+          "keepLengthFixed": false,
+          "keepAngleFixed": true,
+          "axisId": "ax0",
+          "axisPosition": 75.22007304945862,
+          "axisReferenceEnd": "start",
+          "branchNodeId": "branch-node-1",
+          "branchRelativeAngleDeg": 270,
+          "branchLength": 50,
+          "visible": true,
+          "locked": false
+        },
+        {
+          "id": "axis-5",
+          "name": "Axis 5",
+          "index": 5,
+          "a": {
+            "x": 775.2200730494586,
+            "y": 404.5349149685264
+          },
+          "b": {
+            "x": 725.2200730494586,
+            "y": 404.5349149685264
+          },
+          "parameterMode": "endpoints",
+          "keepLengthFixed": false,
+          "keepAngleFixed": true,
+          "axisId": "axis-4",
+          "axisPosition": 45.46508503147362,
+          "axisReferenceEnd": "start",
+          "branchNodeId": "branch-node-2",
+          "branchRelativeAngleDeg": 630,
+          "branchLength": 50,
+          "visible": true,
+          "locked": false
+        },
+        {
+          "id": "axis-6",
+          "name": "Axis 6",
+          "index": 6,
+          "a": {
+            "x": 775.2200730494586,
+            "y": 479.130599643802
+          },
+          "b": {
+            "x": 825.2200730494586,
+            "y": 479.130599643802
+          },
+          "parameterMode": "endpoints",
+          "keepLengthFixed": false,
+          "keepAngleFixed": true,
+          "axisId": "axis-4",
+          "axisPosition": -29.130599643801986,
+          "axisReferenceEnd": "start",
+          "branchNodeId": "branch-node-3",
+          "branchRelativeAngleDeg": 450,
+          "branchLength": 50,
+          "visible": true,
+          "locked": false
+        }
+      ],
+      "axisBranchNodes": [
+        {
+          "id": "branch-node-1",
+          "name": "Branch Node 1",
+          "axisId": "ax0",
+          "axisPosition": 75.22007304945862,
+          "axisReferenceEnd": "start",
+          "axialOffset": 0,
+          "lateralOffset": 0,
+          "visible": true,
+          "locked": false
+        },
+        {
+          "id": "branch-node-2",
+          "name": "Branch Node 2",
+          "axisId": "axis-4",
+          "axisPosition": 45.46508503147362,
+          "axisReferenceEnd": "start",
+          "axialOffset": 0,
+          "lateralOffset": 0,
+          "visible": true,
+          "locked": false
+        },
+        {
+          "id": "branch-node-3",
+          "name": "Branch Node 3",
+          "axisId": "axis-4",
+          "axisPosition": -29.130599643801986,
+          "axisReferenceEnd": "start",
+          "axialOffset": 0,
+          "lateralOffset": 0,
+          "visible": true,
+          "locked": false
+        }
+      ],
+      "dimensions": [],
+      "sources": [
+        {
+          "id": "source-1",
+          "name": "Collimated Source",
+          "kind": "collimated",
+          "axisId": null,
+          "locked": false,
+          "angleRelativeToAxis": false,
+          "axialOffset": 0,
+          "lateralOffset": 0,
+          "origin": {
+            "x": 496.9368396721058,
+            "y": 395.88955291574183
+          },
+          "direction": {
+            "x": 1,
+            "y": 0
+          },
+          "width": 3.5,
+          "count": 3,
+          "rayDensity": 1,
+          "spectralMode": "monochromatic",
+          "wavelengthNm": 605,
+          "wavelengthMinNm": 450,
+          "wavelengthMaxNm": 650,
+          "spectralSamples": 9,
+          "wavelengths": [
+            605
+          ],
+          "axisReferenceEnd": "start",
+          "axisPosition": null
+        },
+        {
+          "id": "source-2",
+          "name": "Collimated Source",
+          "kind": "collimated",
+          "axisId": null,
+          "locked": false,
+          "angleRelativeToAxis": false,
+          "axialOffset": 0,
+          "lateralOffset": 0,
+          "origin": {
+            "x": 473.8883821678356,
+            "y": 429.76488655106857
+          },
+          "direction": {
+            "x": 6.123233995736766e-17,
+            "y": 1
+          },
+          "width": 3.5,
+          "count": 15,
+          "rayDensity": 1,
+          "spectralMode": "monochromatic",
+          "wavelengthNm": 530,
+          "wavelengthMinNm": 450,
+          "wavelengthMaxNm": 650,
+          "spectralSamples": 9,
+          "wavelengths": [
+            530
+          ],
+          "axisReferenceEnd": "start",
+          "axisPosition": null
+        },
+        {
+          "id": "source-3",
+          "name": "Point Source",
+          "kind": "point",
+          "axisId": "axis-5",
+          "locked": false,
+          "angleRelativeToAxis": true,
+          "axialOffset": 0,
+          "lateralOffset": 0,
+          "origin": {
+            "x": 693.4112131542539,
+            "y": 404.5349149685264
+          },
+          "thetaMin": -0.1753017026007981,
+          "thetaMax": 0.1737641477980678,
+          "count": 7,
+          "spectralMode": "monochromatic",
+          "wavelengthNm": 700,
+          "wavelengthMinNm": 450,
+          "wavelengthMaxNm": 650,
+          "spectralSamples": 9,
+          "wavelengths": [
+            700
+          ],
+          "axisReferenceEnd": "start",
+          "axisPosition": 81.8088598952047
+        }
+      ],
+      "camera": {
+        "center": {
+          "x": 626.6281156846304,
+          "y": 441.56812787200886
+        },
+        "zoom": 2.4141434913303077
+      },
+      "previewMode": {
+        "name": "preview",
+        "maxBounces": 5,
+        "rayScale": 0.2
+      },
+      "fullMode": {
+        "name": "full",
+        "maxBounces": 10,
+        "rayScale": 1
+      }
+    },
+    "savedAssemblyTemplates": [
+      {
+        "id": "saved-assembly-1",
+        "name": "Achro.Doublet, f=30mm",
+        "edgeBehavior": "absorbing",
+        "surfaces": [
+          {
+            "type": "spherical",
+            "diameter": 22.25,
+            "thicknessToNext": 7.76,
+            "radius": -19.983,
+            "conicConstant": 0,
+            "a4": 0,
+            "a6": 0,
+            "a8": 0,
+            "materialId": 69,
+            "optical": {
+              "refractiveIndex": 1.6222915011070096,
+              "materialPresetId": "n-ssk2",
+              "dispersionModel": "sellmeier",
+              "referenceWavelengthNm": 587.6,
+              "sellmeier": {
+                "b1": 1.4306027,
+                "b2": 0.153150554,
+                "b3": 1.01390904,
+                "c1": 0.00823983,
+                "c2": 0.033373684,
+                "c3": 106.870822
+              }
+            }
+          },
+          {
+            "type": "spherical",
+            "diameter": 22.25,
+            "thicknessToNext": 1.23,
+            "radius": 27.316999999999997,
+            "conicConstant": 0,
+            "a4": 0,
+            "a6": 0,
+            "a8": 0,
+            "materialId": 0,
+            "optical": {
+              "refractiveIndex": 1,
+              "materialPresetId": "air",
+              "dispersionModel": "sellmeier",
+              "referenceWavelengthNm": 587.6,
+              "sellmeier": {
+                "b1": 0,
+                "b2": 0,
+                "b3": 0,
+                "c1": 1,
+                "c2": 1,
+                "c3": 1
+              }
+            }
+          },
+          {
+            "type": "spherical",
+            "diameter": 20.25,
+            "thicknessToNext": 5,
+            "radius": 20.485,
+            "conicConstant": 0,
+            "a4": 0,
+            "a6": 0,
+            "a8": 0,
+            "materialId": 70,
+            "optical": {
+              "refractiveIndex": 1.8466531529024086,
+              "materialPresetId": "n-sf57",
+              "dispersionModel": "sellmeier",
+              "referenceWavelengthNm": 587.6,
+              "sellmeier": {
+                "b1": 1.87543831,
+                "b2": 0.37375749,
+                "b3": 2.30001797,
+                "c1": 0.014174952,
+                "c2": 0.064050993,
+                "c3": 177.389795
+              }
+            }
+          },
+          {
+            "type": "spherical",
+            "diameter": 22.25,
+            "thicknessToNext": 0,
+            "radius": 40.675,
+            "conicConstant": 0,
+            "a4": 0,
+            "a6": 0,
+            "a8": 0,
+            "materialId": 0,
+            "optical": {
+              "refractiveIndex": 1,
+              "materialPresetId": "custom",
+              "dispersionModel": "constant",
+              "referenceWavelengthNm": 587.6,
+              "sellmeier": {
+                "b1": 1.03961212,
+                "b2": 0.231792344,
+                "b3": 1.01046945,
+                "c1": 0.00600069867,
+                "c2": 0.0200179144,
+                "c3": 103.560653
+              }
+            }
+          }
+        ]
+      },
+      {
+        "id": "saved-assembly-2",
+        "name": "Objective 0.4NA 20x",
+        "edgeBehavior": "absorbing",
+        "surfaces": [
+          {
+            "type": "spherical",
+            "diameter": 5,
+            "thicknessToNext": 2.21,
+            "radius": 8.33,
+            "conicConstant": 0,
+            "a4": 0,
+            "a6": 0,
+            "a8": 0,
+            "materialId": 71,
+            "optical": {
+              "refractiveIndex": 1.56384,
+              "materialPresetId": "custom",
+              "dispersionModel": "constant",
+              "referenceWavelengthNm": 587.6,
+              "sellmeier": {
+                "b1": 1.03961212,
+                "b2": 0.231792344,
+                "b3": 1.01046945,
+                "c1": 0.00600069867,
+                "c2": 0.0200179144,
+                "c3": 103.560653
+              }
+            }
+          },
+          {
+            "type": "spherical",
+            "diameter": 7,
+            "thicknessToNext": 0.15,
+            "radius": 5.1,
+            "conicConstant": 0,
+            "a4": 0,
+            "a6": 0,
+            "a8": 0,
+            "materialId": 72,
+            "optical": {
+              "refractiveIndex": 1,
+              "materialPresetId": "air",
+              "dispersionModel": "sellmeier",
+              "referenceWavelengthNm": 587.6,
+              "sellmeier": {
+                "b1": 0,
+                "b2": 0,
+                "b3": 0,
+                "c1": 1,
+                "c2": 1,
+                "c3": 1
+              }
+            }
+          },
+          {
+            "type": "spherical",
+            "diameter": 7,
+            "thicknessToNext": 1.02,
+            "radius": -26.222,
+            "conicConstant": 0,
+            "a4": 0,
+            "a6": 0,
+            "a8": 0,
+            "materialId": 73,
+            "optical": {
+              "refractiveIndex": 1.54869,
+              "materialPresetId": "custom",
+              "dispersionModel": "constant",
+              "referenceWavelengthNm": 587.6,
+              "sellmeier": {
+                "b1": 1.03961212,
+                "b2": 0.231792344,
+                "b3": 1.01046945,
+                "c1": 0.00600069867,
+                "c2": 0.0200179144,
+                "c3": 103.560653
+              }
+            }
+          },
+          {
+            "type": "spherical",
+            "diameter": 7,
+            "thicknessToNext": 2.33,
+            "radius": -12.17,
+            "conicConstant": 0,
+            "a4": 0,
+            "a6": 0,
+            "a8": 0,
+            "materialId": 74,
+            "optical": {
+              "refractiveIndex": 1.48656,
+              "materialPresetId": "custom",
+              "dispersionModel": "constant",
+              "referenceWavelengthNm": 587.6,
+              "sellmeier": {
+                "b1": 1.03961212,
+                "b2": 0.231792344,
+                "b3": 1.01046945,
+                "c1": 0.00600069867,
+                "c2": 0.0200179144,
+                "c3": 103.560653
+              }
+            }
+          },
+          {
+            "type": "spherical",
+            "diameter": 7,
+            "thicknessToNext": 0.37,
+            "radius": 11.28,
+            "conicConstant": 0,
+            "a4": 0,
+            "a6": 0,
+            "a8": 0,
+            "materialId": 75,
+            "optical": {
+              "refractiveIndex": 1,
+              "materialPresetId": "air",
+              "dispersionModel": "sellmeier",
+              "referenceWavelengthNm": 587.6,
+              "sellmeier": {
+                "b1": 0,
+                "b2": 0,
+                "b3": 0,
+                "c1": 1,
+                "c2": 1,
+                "c3": 1
+              }
+            }
+          },
+          {
+            "type": "spherical",
+            "diameter": 7,
+            "thicknessToNext": 3.46,
+            "radius": -7.85,
+            "conicConstant": 0,
+            "a4": 0,
+            "a6": 0,
+            "a8": 0,
+            "materialId": 76,
+            "optical": {
+              "refractiveIndex": 1.618,
+              "materialPresetId": "custom",
+              "dispersionModel": "constant",
+              "referenceWavelengthNm": 587.6,
+              "sellmeier": {
+                "b1": 1.03961212,
+                "b2": 0.231792344,
+                "b3": 1.01046945,
+                "c1": 0.00600069867,
+                "c2": 0.0200179144,
+                "c3": 103.560653
+              }
+            }
+          },
+          {
+            "type": "spherical",
+            "diameter": 7,
+            "thicknessToNext": 3.07,
+            "radius": 9.58,
+            "conicConstant": 0,
+            "a4": 0,
+            "a6": 0,
+            "a8": 0,
+            "materialId": 77,
+            "optical": {
+              "refractiveIndex": 1.6393,
+              "materialPresetId": "custom",
+              "dispersionModel": "constant",
+              "referenceWavelengthNm": 587.6,
+              "sellmeier": {
+                "b1": 1.03961212,
+                "b2": 0.231792344,
+                "b3": 1.01046945,
+                "c1": 0.00600069867,
+                "c2": 0.0200179144,
+                "c3": 103.560653
+              }
+            }
+          },
+          {
+            "type": "spherical",
+            "diameter": 5,
+            "thicknessToNext": 3.2,
+            "radius": -4.29,
+            "conicConstant": 0,
+            "a4": 0,
+            "a6": 0,
+            "a8": 0,
+            "materialId": 78,
+            "optical": {
+              "refractiveIndex": 1,
+              "materialPresetId": "air",
+              "dispersionModel": "sellmeier",
+              "referenceWavelengthNm": 587.6,
+              "sellmeier": {
+                "b1": 0,
+                "b2": 0,
+                "b3": 0,
+                "c1": 1,
+                "c2": 1,
+                "c3": 1
+              }
+            }
+          },
+          {
+            "type": "spherical",
+            "diameter": 5,
+            "thicknessToNext": 0.99,
+            "radius": 3.71,
+            "conicConstant": 0,
+            "a4": 0,
+            "a6": 0,
+            "a8": 0,
+            "materialId": 79,
+            "optical": {
+              "refractiveIndex": 1.57309,
+              "materialPresetId": "custom",
+              "dispersionModel": "constant",
+              "referenceWavelengthNm": 587.6,
+              "sellmeier": {
+                "b1": 1.03961212,
+                "b2": 0.231792344,
+                "b3": 1.01046945,
+                "c1": 0.00600069867,
+                "c2": 0.0200179144,
+                "c3": 103.560653
+              }
+            }
+          },
+          {
+            "type": "spherical",
+            "diameter": 10,
+            "thicknessToNext": 4.05,
+            "radius": -23.38,
+            "conicConstant": 0,
+            "a4": 0,
+            "a6": 0,
+            "a8": 0,
+            "materialId": 80,
+            "optical": {
+              "refractiveIndex": 1.48656,
+              "materialPresetId": "custom",
+              "dispersionModel": "constant",
+              "referenceWavelengthNm": 587.6,
+              "sellmeier": {
+                "b1": 1.03961212,
+                "b2": 0.231792344,
+                "b3": 1.01046945,
+                "c1": 0.00600069867,
+                "c2": 0.0200179144,
+                "c3": 103.560653
+              }
+            }
+          },
+          {
+            "type": "spherical",
+            "diameter": 10,
+            "thicknessToNext": 0.25,
+            "radius": 6.11,
+            "conicConstant": 0,
+            "a4": 0,
+            "a6": 0,
+            "a8": 0,
+            "materialId": 81,
+            "optical": {
+              "refractiveIndex": 1,
+              "materialPresetId": "air",
+              "dispersionModel": "sellmeier",
+              "referenceWavelengthNm": 587.6,
+              "sellmeier": {
+                "b1": 0,
+                "b2": 0,
+                "b3": 0,
+                "c1": 1,
+                "c2": 1,
+                "c3": 1
+              }
+            }
+          },
+          {
+            "type": "spherical",
+            "diameter": 12,
+            "thicknessToNext": 3.3,
+            "radius": -16.96,
+            "conicConstant": 0,
+            "a4": 0,
+            "a6": 0,
+            "a8": 0,
+            "materialId": 82,
+            "optical": {
+              "refractiveIndex": 1.48656,
+              "materialPresetId": "custom",
+              "dispersionModel": "constant",
+              "referenceWavelengthNm": 587.6,
+              "sellmeier": {
+                "b1": 1.03961212,
+                "b2": 0.231792344,
+                "b3": 1.01046945,
+                "c1": 0.00600069867,
+                "c2": 0.0200179144,
+                "c3": 103.560653
+              }
+            }
+          },
+          {
+            "type": "spherical",
+            "diameter": 12,
+            "thicknessToNext": 7,
+            "radius": 18.95,
+            "conicConstant": 0,
+            "a4": 0,
+            "a6": 0,
+            "a8": 0,
+            "materialId": 83,
+            "optical": {
+              "refractiveIndex": 1,
+              "materialPresetId": "air",
+              "dispersionModel": "sellmeier",
+              "referenceWavelengthNm": 587.6,
+              "sellmeier": {
+                "b1": 0,
+                "b2": 0,
+                "b3": 0,
+                "c1": 1,
+                "c2": 1,
+                "c3": 1
+              }
+            }
+          },
+          {
+            "type": "spherical",
+            "diameter": 12,
+            "thicknessToNext": 4.27,
+            "radius": -10.15,
+            "conicConstant": 0,
+            "a4": 0,
+            "a6": 0,
+            "a8": 0,
+            "materialId": 84,
+            "optical": {
+              "refractiveIndex": 1.58144,
+              "materialPresetId": "custom",
+              "dispersionModel": "constant",
+              "referenceWavelengthNm": 587.6,
+              "sellmeier": {
+                "b1": 1.03961212,
+                "b2": 0.231792344,
+                "b3": 1.01046945,
+                "c1": 0.00600069867,
+                "c2": 0.0200179144,
+                "c3": 103.560653
+              }
+            }
+          },
+          {
+            "type": "spherical",
+            "diameter": 10,
+            "thicknessToNext": 0,
+            "radius": -7.1,
+            "conicConstant": 0,
+            "a4": 0,
+            "a6": 0,
+            "a8": 0,
+            "materialId": 0,
+            "optical": {
+              "refractiveIndex": 1,
+              "materialPresetId": "custom",
+              "dispersionModel": "constant",
+              "referenceWavelengthNm": 587.6,
+              "sellmeier": {
+                "b1": 1.03961212,
+                "b2": 0.231792344,
+                "b3": 1.01046945,
+                "c1": 0.00600069867,
+                "c2": 0.0200179144,
+                "c3": 103.560653
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "sessionMaterialPresets": []
+  }
+}
