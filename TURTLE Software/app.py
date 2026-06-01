@@ -418,7 +418,7 @@ def api_stitch():
         path = os.path.join(foldername, f"{total_tiles}")
         ImageGrabAndSave.capture_single_image(4, path)
         time.sleep(2)
-    Image_Stitcher.stitch(foldername, (x_tiles, y_tiles), "Stitched", output_type_list[4])
+    Image_Stitcher.stitch(foldername, (x_tiles, y_tiles), output_type_list[4])
     return jsonify({
         "ok": True,
         "foldername": foldername,

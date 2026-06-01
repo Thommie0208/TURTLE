@@ -2,7 +2,8 @@ import os
 import glob
 import cv2
 from stitch2d import StructuredMosaic
-def stitch(path, tiles, output, extension):
+def stitch(path, tiles, extension):
+    
     # change only this block
     folder = path
 
@@ -15,7 +16,7 @@ def stitch(path, tiles, output, extension):
     overlap_x = 0.10
     overlap_y = 0.10
 
-    output_name = output
+    output_name = "stitch2d_mosaic.jpg"
 
     # CHECK IMAGES
     image_paths = sorted(glob.glob(os.path.join(folder, f"*.{file_extension}")))
