@@ -408,9 +408,9 @@ def api_stitch():
     for i in range(len(steps)):
         send_to_pico(json.dumps(steps[i]))
         time.sleep(6)
-        if steps[i]["steps"] < 0: #This is the command that returns the x to the start to start the next y line
-            continue
+        if steps[i]["steps"] <= 0: #This is the command that returns the x to the start to start the next y line
             time.sleep(2)
+            continue
         if steps[i]["axis"] == "x":
             x_tiles += 1
         else:
@@ -424,11 +424,14 @@ def api_stitch():
     return jsonify({
         "ok": True,
         "foldername": foldername,
-        "points": points
+        "points": points,
+        "tiles_x": x_tiles,
+        "tiles_y": y_tiles,
+        "total_images": total_tiles
     })
 
 
-def determine_stitch_square(points: list[float]) -> list[dict[str, str | int]]:
+def determine_stitch_square(points: list[float]) -> tuple[list[dict[str, str | int]], int, int]:
     steps: list[dict[str, str | int]] = []
     x1, y1, x2, y2, x3, y3 = points
     top_left: tuple[float, float] = (min(x1, x2, x3), max(y1, y2, y3))
@@ -440,10 +443,12 @@ def determine_stitch_square(points: list[float]) -> list[dict[str, str | int]]:
     y_list = np.arange(0, bottom_right[1], camera_fov[1] - camera_fov[1] * required_overlap)
     y_list = np.hstack((np.zeros(1), y_list)) #So you can do y[1] - y[0] without moving y at first
     x_list = np.arange(0, bottom_right[0], camera_fov[0] - camera_fov[0] * required_overlap)
-
+    x_tiles = 0
+    y_tiles = 0
     stepsize = 1/2048 * 1000 #micro m
     for y in range(1, len(y_list)):
         steps_in_direction = int((y_list[y] - y_list[y - 1])/stepsize)
+        y_tiles += 1
         steps.append({
         "cmd": "move",
         "axis": "y",
@@ -452,6 +457,7 @@ def determine_stitch_square(points: list[float]) -> list[dict[str, str | int]]:
         "power": 70})
         steps_in_x = 0
         for x in range(1, len(x_list)):
+            x_tiles += 1
             steps_in_direction = int((x_list[x] - x_list[x - 1])/stepsize)
             steps.append({
             "cmd": "move",
@@ -469,7 +475,7 @@ def determine_stitch_square(points: list[float]) -> list[dict[str, str | int]]:
             "power": 70
             })
         steps_in_x = 0
-    return steps
+    return steps, x_tiles, y_tiles
 
 @app.route("/api/stack", methods=["POST"])
 def api_stack():
