@@ -2,13 +2,13 @@ import os
 import glob
 import cv2
 from stitch2d import StructuredMosaic
-def stitch(path, tiles, output):
+def stitch(path, tiles, output, extension):
     # change only this block
     folder = path
 
     tiles_x, tiles_y = tiles
 
-    file_extension = "jpg"
+    file_extension = extension
 
     snake_pattern = False
 

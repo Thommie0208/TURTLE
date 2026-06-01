@@ -390,6 +390,7 @@ def api_stitch():
     data = request.get_json(silent=True) or {}
     data_points: list[dict[str, str]] = data.get("points", []) #Format is list[dict[str, str]], being [timestamp:, x:, y:]
     foldername: str = data.get("folderName", "")
+    output_type_list = ["raw", "jpeg", "bmp", "tiff", "png"]
     
     if not isinstance(data_points, list):
         return jsonify({"error": "Invalid stitching points"}), 400
@@ -420,7 +421,7 @@ def api_stitch():
         ImageGrabAndSave.capture_single_image(4, path)
         time.sleep(2)
 
-    Image_Stitcher.stitch(foldername, (x_tiles, y_tiles), "Stitched")
+    Image_Stitcher.stitch(foldername, (x_tiles, y_tiles), "Stitched", output_type_list[4])
     return jsonify({
         "ok": True,
         "foldername": foldername,
