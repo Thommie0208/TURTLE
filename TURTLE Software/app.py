@@ -407,7 +407,7 @@ def api_stitch():
     for i in range(len(steps)):
         send_to_pico(json.dumps(steps[i]))
         time.sleep(6)
-        if steps[0][i]["steps"] <= 0: #This is the command that returns the x to the start to start the next y line
+        if steps[i]["steps"] <= 0: #This is the command that returns the x to the start to start the next y line
             time.sleep(2)
             continue
         total_tiles += 1
@@ -469,7 +469,7 @@ def determine_stitch_square(points: list[float]) -> tuple[list[dict[str, str | i
             "power": 70
             })
         steps_in_x = 0
-    return steps, x_tiles, y_tiles
+    return steps, x_tiles - 1, y_tiles
 
 @app.route("/api/stack", methods=["POST"])
 def api_stack():

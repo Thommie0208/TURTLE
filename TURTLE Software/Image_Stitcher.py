@@ -27,7 +27,7 @@ def stitch(path, tiles, output, extension):
 
     if len(image_paths) != expected_number:
         raise ValueError(
-            "Wrong number of images. Check tiles_x, tiles_y, folder, or file_extension."
+            f"Wrong number of images. Check tiles_x, tiles_y, folder, or file_extension. Expected amount: {expected_number}. Found number: {len(image_paths)}"
         )
 
     first_image = cv2.imread(image_paths[0])
