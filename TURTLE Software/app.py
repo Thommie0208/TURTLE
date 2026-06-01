@@ -411,7 +411,7 @@ def api_stitch():
     for i in range(len(steps)):
         send_to_pico(json.dumps(steps[i]))
         time.sleep(6)
-        if steps[i]["steps"] <= 0: #This is the command that returns the x to the start to start the next y line
+        if steps[i]["steps"] < 0: #This is the command that returns the x to the start to start the next y line
             time.sleep(2)
             continue
         total_tiles += 1
@@ -437,16 +437,18 @@ def determine_stitch_square(points: list[float]) -> tuple[list[dict[str, str | i
     normalization_xy: tuple[float, float] = (0 - top_left[0], 0 - top_left[1])
     top_left = (top_left[0] + normalization_xy[0], top_left[1] + normalization_xy[1])
     bottom_right = ((bottom_right[0] + normalization_xy[0]), -(bottom_right[1] + normalization_xy[1]))
-
-    y_list = np.arange(0, bottom_right[1], camera_fov[1] - camera_fov[1] * required_overlap)
-    y_list = np.hstack((np.zeros(1), y_list)) #So you can do y[1] - y[0] without moving y at first
-    x_list = np.arange(0, bottom_right[0], camera_fov[0] - camera_fov[0] * required_overlap)
-    x_tiles = 0
-    y_tiles = 0
+    
+    tiles_in_x = int((bottom_right[0] - top_left[0]) / (camera_fov[0] * (1 - required_overlap))) + 1
+    tiles_in_y = int((bottom_right[1] - top_left[1]) / (camera_fov[1] * (1 - required_overlap))) + 1
+    print(f"tiles in x: {tiles_in_x}, tiles in y: {tiles_in_y}")
     stepsize = 1/2048 * 1000 #micro m
-    for y in range(1, len(y_list)):
-        steps_in_direction = int((y_list[y] - y_list[y - 1])/stepsize)
-        y_tiles += 1
+    y = camera_fov[1] * (1 - required_overlap)
+    x = camera_fov[0] * (1 - required_overlap)
+    while y <= bottom_right[1]:
+        steps_in_direction = 0
+        if steps:
+            steps_in_direction = int(camera_fov[1]* (1 - required_overlap)/stepsize)
+            y += steps_in_direction * stepsize
         steps.append({
         "cmd": "move",
         "axis": "y",
@@ -454,9 +456,9 @@ def determine_stitch_square(points: list[float]) -> tuple[list[dict[str, str | i
         "delay_us": 2000,
         "power": 70})
         steps_in_x = 0
-        for x in range(1, len(x_list)):
-            x_tiles += 1
-            steps_in_direction = int((x_list[x] - x_list[x - 1])/stepsize)
+        while x <= bottom_right[0]:
+            steps_in_direction = int(camera_fov[0]* (1 - required_overlap)/stepsize)
+            x += steps_in_direction * stepsize
             steps.append({
             "cmd": "move",
             "axis": "x",
@@ -473,7 +475,8 @@ def determine_stitch_square(points: list[float]) -> tuple[list[dict[str, str | i
             "power": 70
             })
         steps_in_x = 0
-    return steps, x_tiles - 1, y_tiles
+        x = camera_fov[0] * (1 - required_overlap)
+    return steps, tiles_in_x, tiles_in_y
 
 @app.route("/api/stack", methods=["POST"])
 def api_stack():
