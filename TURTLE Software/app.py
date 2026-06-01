@@ -27,7 +27,7 @@ FILTER_POWER = 80
 current_filter = 1
 
 required_overlap = 0.10 # fraction (10%)
-camera_fov: tuple[float, float] = (1.106*1000, 1.659*1000) #x, y (micro m)
+camera_fov: tuple[float, float] = (1.106 * 1000, 1.659 * 1000)  # x, y (micro m)
 
 
 # -------------------------
@@ -406,7 +406,11 @@ def api_stitch():
         points.append(float(entry['x']))
         points.append(float(entry['y']))
         
-    steps, x_tiles, y_tiles = determine_stitch_square(points)
+    camera_fov_x: float = data.get("camera_fov_x")
+    camera_fov_y: float = data.get("camera_fov_y")
+
+
+    steps, x_tiles, y_tiles = determine_stitch_square(points, (camera_fov_x, camera_fov_y))
     total_tiles = 0
     for i in range(len(steps)):
         send_to_pico(json.dumps(steps[i]))
@@ -429,7 +433,7 @@ def api_stitch():
     })
 
 
-def determine_stitch_square(points: list[float]) -> tuple[list[dict[str, str | int]], int, int]:
+def determine_stitch_square(points: list[float], camera_fov: tuple[float, float]) -> tuple[list[dict[str, str | int]], int, int]:
     steps: list[dict[str, str | int]] = []
     x1, y1, x2, y2, x3, y3 = points
     top_left: tuple[float, float] = (min(x1, x2, x3), max(y1, y2, y3))

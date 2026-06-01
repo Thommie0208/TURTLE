@@ -82,7 +82,7 @@
     }
 
     .stitching-panel {
-        grid-column: 1 / span 2;
+        grid-column: 1 / span 1;
         grid-row: 3;
         min-height: 280px;
         height: auto;
@@ -152,6 +152,53 @@
         border-radius: 14px;
         min-height: 44px;
         font-size: 16px;
+    }
+
+    .parameters-panel {
+        grid-column: 2;
+        grid-row: 3;
+        min-height: 280px;
+        height: auto;
+    }
+
+    .parameters-panel .param-grid {
+        display: grid;
+        gap: 16px;
+    }
+
+    .parameters-panel .param-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .parameters-panel label {
+        font-size: 18px;
+        font-weight: 700;
+        width: 190px;
+        flex-shrink: 0;
+        color: white;
+    }
+
+    .parameters-panel input,
+    .parameters-panel select {
+        flex: 1;
+        min-height: 44px;
+        border: 2px solid black;
+        border-radius: 12px;
+        padding: 0 12px;
+        font-size: 16px;
+        box-sizing: border-box;
+        background: #f0f0f0;
+    }
+
+    .parameters-panel .fov-values {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        color: white;
+        font-size: 15px;
+        width: 100%;
     }
 
     .zstack-panel {
@@ -237,7 +284,7 @@
     .main-grid > .panel:nth-of-type(4),
     .filter-panel {
         min-height: 370px;
-        height: 370px;
+        height: auto;
     }
 
     .console-panel {
@@ -799,6 +846,39 @@
             </div>
         </div>
 
+        <div class="panel parameters-panel">
+            <h2>Parameters</h2>
+            <div class="param-grid">
+                <div class="param-row">
+                    <label for="objective_magnification">Objective magnification</label>
+                    <input id="objective_magnification" type="number" placeholder="e.g. 20x">
+                </div>
+                <div class="param-row">
+                    <label for="tube_lens_focal_length">Tube lens focal length (mm)</label>
+                    <input id="tube_lens_focal_length" type="number" placeholder="e.g. 200">
+                </div>
+                <div class="param-row">
+                    <label for="imaging_lens_focal_length">Imaging lens focal length (mm)</label>
+                    <input id="imaging_lens_focal_length" type="number" placeholder="e.g. 100 mm">
+                </div>
+                <div class="param-row">
+                    <label for="camera_resolutie">Camera resolutie</label>
+                    <input id="camera_resolutie" type="text" placeholder="e.g. 1920x1080">
+                </div>
+                <div class="param-row">
+                    <label for="camera_pixel_grootte">Camera pixel grootte (µm)</label>
+                    <input id="camera_pixel_grootte" type="number" placeholder="e.g. 5.86 µm">
+                </div>
+                <div class="param-row">
+                    <label>Camera FOV</label>
+                    <div class="fov-values">
+                        <div id="fov_x">FOV X: -</div>
+                        <div id="fov_y">FOV Y: -</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="panel stitching-panel">
             <h2>Image stitching</h2>
             <div class="button-grid">
@@ -1144,10 +1224,14 @@ function resetStitchingPoints() {
 
 function startImageStitch() {
     const foldername = (document.getElementById("stitch_folder").value || "stitch").trim() || "foldername";
+    const fovX = parseFloat((document.getElementById("fov_x").textContent || "").replace(/[^0-9.\-]/g, ""));
+    const fovY = parseFloat((document.getElementById("fov_y").textContent || "").replace(/[^0-9.\-]/g, ""));
 
     postJSON("/api/stitch", {
         points: stitchingPoints,
-        foldername: foldername
+        foldername: foldername,
+        camera_fov_x: Number.isFinite(fovX) ? fovX : null,
+        camera_fov_y: Number.isFinite(fovY) ? fovY : null
     });
     log("Started image stitching.");
 }
@@ -1259,6 +1343,82 @@ function toggleLivestream() {
     setLivestreamEnabled(!livestreamEnabled);
 }
 
+function getCameraParameters() {
+    return {
+        objectiveMagnification: document.getElementById("objective_magnification").value.trim(),
+        tubeLensFocalLength: document.getElementById("tube_lens_focal_length").value.trim(),
+        imagingLensFocalLength: document.getElementById("imaging_lens_focal_length").value.trim(),
+        cameraResolutie: document.getElementById("camera_resolutie").value.trim(),
+        cameraPixelGrootte: document.getElementById("camera_pixel_grootte").value.trim()
+    };
+}
+
+function recalcCameraFOV() {
+    const params = getCameraParameters();
+
+    function parseNumber(value) {
+        if (!value) {
+            return NaN;
+        }
+        const cleaned = value.replace(",", ".").match(/-?[0-9]*\.?[0-9]+/);
+        return cleaned ? parseFloat(cleaned[0]) : NaN;
+    }
+
+    function parseResolution(value) {
+        if (!value) {
+            return null;
+        }
+        const match = value.match(/(\d+)\s*[x×]\s*(\d+)/i);
+        return match ? [parseInt(match[1], 10), parseInt(match[2], 10)] : null;
+    }
+
+    const objectiveMag = parseNumber(params.objectiveMagnification);
+    const tubeLensFL = parseNumber(params.tubeLensFocalLength);
+    const imagingLensFL = parseNumber(params.imagingLensFocalLength);
+    const pixelSizeUm = parseNumber(params.cameraPixelGrootte);
+    const resolution = parseResolution(params.cameraResolutie);
+
+    let fovX = "TBD";
+    let fovY = "TBD";
+
+    if (
+        Number.isFinite(objectiveMag) &&
+        Number.isFinite(imagingLensFL) &&
+        Number.isFinite(tubeLensFL) &&
+        Number.isFinite(pixelSizeUm) &&
+        resolution &&
+        resolution[0] > 0 &&
+        resolution[1] > 0
+    ) {
+        const effectiveMagnification = objectiveMag * (imagingLensFL / tubeLensFL);
+        const sensorWidthUm = resolution[0] * pixelSizeUm;
+        const sensorHeightUm = resolution[1] * pixelSizeUm;
+        const calcFovX = sensorWidthUm / effectiveMagnification;
+        const calcFovY = sensorHeightUm / effectiveMagnification;
+
+        fovX = `${calcFovX.toFixed(1)} µm`;
+        fovY = `${calcFovY.toFixed(1)} µm`;
+    }
+
+    document.getElementById("fov_x").textContent = `FOV X: ${fovX}`;
+    document.getElementById("fov_y").textContent = `FOV Y: ${fovY}`;
+}
+
+function bindCameraParamInputs() {
+    [
+        "objective_magnification",
+        "tube_lens_focal_length",
+        "imaging_lens_focal_length",
+        "camera_resolutie",
+        "camera_pixel_grootte"
+    ].forEach((id) => {
+        const input = document.getElementById(id);
+        if (input) {
+            input.addEventListener("input", recalcCameraFOV);
+        }
+    });
+}
+
 function captureImage() {
     const outputType = document.getElementById("image_format").value;
     const filename = (document.getElementById("image_filename").value || "capture").trim() || "filename";
@@ -1288,7 +1448,8 @@ function captureImage() {
 }
 
 setLivestreamEnabled(false);
-
+    bindCameraParamInputs();
+    recalcCameraFOV();
 function takePicture(filename, outputType) {
     return captureImage();
 }
