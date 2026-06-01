@@ -387,17 +387,23 @@ def api_pictures():
 @app.route("/api/stitch", methods=["POST"])
 def api_stitch():
     data = request.get_json(silent=True) or {}
-    points: list[float] = data.get("points", [])
+    data_points: list[float] = data.get("points", []) #Format is list[dict[str, str]], being [timestamp:, x:, y:]
     foldername: str = data.get("folderName", "")
-
-    if not isinstance(points, list):
-        return jsonify({"error": "Invalid stitching points"}), 400
-    if len(points) < 6:
-        return jsonify({"error": "At least 6 stitching points are required"}), 400
     
+    if not isinstance(data_points, list):
+        return jsonify({"error": "Invalid stitching points"}), 400
+    if len(data_points) < 3:
+        return jsonify(points), 400
+        
+    points = []
+    for entry in data_points:
+        points.append(float(entry['x']))
+        points.append(float(entry['y']))
+        
     steps = determine_stitch_square(points)
     x_cor = 0
     y_cor = 0
+    return jsonify(steps)
     for i in range(len(steps)):
         send_to_pico(steps[i])
         time.sleep(6)
@@ -415,7 +421,7 @@ def api_stitch():
     })
 
 
-def determine_stitch_square(points: list) -> list[dict[str, str | int]]:
+def determine_stitch_square(points: list[float]) -> list[dict[str, str | int]]:
     steps: list[dict[str, str | int]] = []
     x1, y1, x2, y2, x3, y3 = points
     top_left: tuple[float, float] = (min(x1, x2, x3), max(y1, y2, y3))
