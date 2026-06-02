@@ -62,7 +62,7 @@ def connect_pico():
     if pico is not None and pico.is_open:
         return pico
 
-    pico = serial.Serial(PICO_PORT, PICO_BAUD, timeout=3)
+    pico = serial.Serial(PICO_PORT, PICO_BAUD, timeout=15)
     time.sleep(2)
     pico.reset_input_buffer()
 
@@ -157,19 +157,24 @@ def move_filter_to(target_filter, delay_us=FILTER_DELAY_US):
         "power": FILTER_POWER
     }
 
-    response = send_to_pico(json.dumps(command))
+    response = send_to_pico_no_wait(json.dumps(command))
 
-    try:
-        pico_data = json.loads(response)
+    if response.startswith("Error"):
+        return {
+            "ok": False,
+            "error": response,
+            "previous_filter": previous_filter,
+            "target_filter": target_filter,
+            "rotations": rotations,
+            "steps": steps,
+            "sent": command
+        }
 
-        if pico_data.get("ok") is True:
-            current_filter = target_filter
-
-    except Exception:
-        pass
+    current_filter = target_filter
 
     return {
         "ok": True,
+        "message": "Filter move started",
         "previous_filter": previous_filter,
         "current_filter": current_filter,
         "target_filter": target_filter,
