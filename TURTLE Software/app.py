@@ -3,6 +3,7 @@ import serial
 import time
 import json
 import os
+import threading
 import RPi.GPIO as GPIO
 import ImageGrabAndSave
 import numpy as np
@@ -50,6 +51,9 @@ GPIO.output(LED_GPIO, GPIO.LOW)
 
 pico = None
 APP_DIR = os.path.dirname(os.path.abspath(__file__))
+pico_lock = threading.RLock()  # Reentrant lock to handle recursive retries
+MAX_RETRIES = 3
+RETRY_DELAY = 0.1  # seconds
 
 
 def connect_pico():
@@ -65,27 +69,57 @@ def connect_pico():
     return pico
 
 
-def send_to_pico(command):
-    ser = connect_pico()
+def send_to_pico(command, retry=0):
+    """
+    Send a command to the Pico and read the response with thread safety and retry logic.
+    """
+    with pico_lock:
+        try:
+            ser = connect_pico()
+            
+            # Clear any stale data in the buffer
+            ser.reset_input_buffer()
+            
+            line = command + "\r\n"
+            ser.write(line.encode("utf-8"))
+            
+            # Give the Pico time to process and respond
+            time.sleep(0.05)
+            
+            response = ser.readline().decode("utf-8", errors="ignore").strip()
 
-    line = command + "\r\n"
-    ser.write(line.encode("utf-8"))
+            if response:
+                return response
 
-    response = ser.readline().decode("utf-8", errors="ignore").strip()
-
-    if response:
-        return response
-
-    return "No response from Pico"
-
+            return "No response from Pico"
+            
+        except serial.SerialException as e:
+            # If it's a read error and we haven't exceeded retries, retry
+            if retry < MAX_RETRIES and "returned no data" in str(e):
+                time.sleep(RETRY_DELAY * (2 ** retry))  # Exponential backoff
+                return send_to_pico(command, retry + 1)
+            else:
+                return f"Serial error: {str(e)}"
+        except Exception as e:
+            return f"Error communicating with Pico: {str(e)}"
 
 def send_to_pico_no_wait(command):
-    ser = connect_pico()
+    """
+    Send a command to the Pico without waiting for a response (fire-and-forget).
+    """
+    with pico_lock:
+        try:
+            ser = connect_pico()
+            
+            # Clear any stale data in the buffer
+            ser.reset_input_buffer()
+            
+            line = command + "\r\n"
+            ser.write(line.encode("utf-8"))
 
-    line = command + "\r\n"
-    ser.write(line.encode("utf-8"))
-
-    return "sent"
+            return "sent"
+        except Exception as e:
+            return f"Error sending to Pico: {str(e)}"
 
 
 def move_filter_to(target_filter, delay_us=FILTER_DELAY_US):
