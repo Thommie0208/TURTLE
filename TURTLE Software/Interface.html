@@ -1,0 +1,1459 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>TURTLE Interface</title>
+    <style>
+    body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background: #efefef;
+        color: black;
+        width: 100%;
+        min-height: 100vh;
+        overflow-x: hidden;
+        overflow-y: auto;
+    }
+
+    .header {
+        background: #7ed957;
+        min-height: 92px;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        box-sizing: border-box;
+        padding: 12px 18px;
+    }
+
+    .header h1 {
+        color: white;
+        font-size: clamp(2rem, 6vw, 64px);
+        margin: 0;
+        font-weight: 700;
+        text-align: center;
+    }
+
+    .logo-img {
+        position: absolute;
+        right: 16px;
+        top: 10px;
+        width: clamp(64px, 13vh, 110px);
+        height: clamp(64px, 13vh, 110px);
+        object-fit: contain;
+    }
+
+    .main-grid {
+        min-height: calc(100vh - 92px);
+        width: 100%;
+        box-sizing: border-box;
+        display: grid;
+        grid-template-columns: minmax(0, 1.8fr) minmax(260px, 0.8fr) minmax(240px, 0.8fr) minmax(220px, 0.7fr);
+        grid-template-rows: auto auto auto auto auto;
+        gap: 18px;
+        padding: 22px;
+        align-items: stretch;
+        align-content: start;
+    }
+
+    .panel {
+        background: #7ed957;
+        border-radius: 40px;
+        padding: 18px 20px;
+        box-sizing: border-box;
+        overflow: auto;
+        min-height: 0;
+    }
+
+    .panel h2 {
+        color: white;
+        margin: 0 0 14px 8px;
+        font-size: 26px;
+        font-weight: 700;
+        line-height: 1.15;
+    }
+
+    .stage-panel {
+        grid-column: 1;
+        grid-row: 1 / span 2;
+        min-height: 100%;
+    }
+
+    .stitching-panel {
+        grid-column: 1 / span 1;
+        grid-row: 3;
+        min-height: 280px;
+        height: auto;
+    }
+
+    .stitching-panel .button-grid {
+        display: grid;
+        grid-template-columns: minmax(220px, 1fr) minmax(220px, 1fr);
+        gap: 16px;
+        margin-top: 16px;
+        align-items: start;
+    }
+
+    .stitching-panel .button-column {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .stitching-panel .point-row {
+        display: flex;
+        gap: 12px;
+        align-items: stretch;
+    }
+
+    .stitching-panel .point-row button {
+        flex: 1;
+    }
+
+    .stitching-panel .stitch-btn,
+    .stitching-panel .reset-point-btn,
+    .stitching-panel .reset-all-btn,
+    .stitching-panel .start-stitch-btn {
+        width: 100%;
+        min-height: 58px;
+        background: #2b9360;
+        color: white;
+        border: 2px solid black;
+        font-size: 18px;
+        font-weight: 700;
+        border-radius: 18px;
+    }
+
+    .stitching-panel #stitch_folder {
+        width: 100%;
+        min-height: 40px;
+        border: 2px solid black;
+        border-radius: 10px;
+        padding: 0 10px;
+        font-size: 15px;
+        box-sizing: border-box;
+        background: #f0f0f0;
+    }
+
+    .stitching-panel .reset-point-btn {
+        background: #ff7b00;
+    }
+
+    .stitching-panel .reset-all-btn {
+        background: #b33131;
+    }
+
+    .stitching-panel .start-stitch-btn {
+        background: #2b9360;
+        color: white;
+        border: 2px solid black;
+        border-radius: 14px;
+        min-height: 44px;
+        font-size: 16px;
+    }
+
+    .parameters-panel {
+        grid-column: 2;
+        grid-row: 3;
+        min-height: 280px;
+        height: auto;
+    }
+
+    .parameters-panel .param-grid {
+        display: grid;
+        gap: 16px;
+    }
+
+    .parameters-panel .param-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .parameters-panel label {
+        font-size: 18px;
+        font-weight: 700;
+        width: 190px;
+        flex-shrink: 0;
+        color: white;
+    }
+
+    .parameters-panel input,
+    .parameters-panel select {
+        flex: 1;
+        min-height: 44px;
+        border: 2px solid black;
+        border-radius: 12px;
+        padding: 0 12px;
+        font-size: 16px;
+        box-sizing: border-box;
+        background: #f0f0f0;
+    }
+
+    .parameters-panel .fov-values {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        color: white;
+        font-size: 15px;
+        width: 100%;
+    }
+
+    .zstack-panel {
+        grid-column: 3 / span 4;
+        grid-row: 3;
+        min-height: 280px;
+        height: auto;
+        background: #7ed957;
+    }
+
+    .zstack-panel .zstack-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .zstack-panel .zstack-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .zstack-panel label {
+        color: white;
+        font-size: 15px;
+        font-weight: 700;
+        min-width: 78px;
+    }
+
+    .zstack-panel input {
+        flex: 1;
+        min-height: 40px;
+        border: 2px solid black;
+        border-radius: 10px;
+        padding: 0 10px;
+        font-size: 15px;
+        box-sizing: border-box;
+        background: #f0f0f0;
+    }
+
+    .zstack-panel .zstack-btn,
+    .zstack-panel .zstack-reset-btn {
+        width: 100%;
+        min-height: 42px;
+        background: #2b9360;
+        color: white;
+        border: 2px solid black;
+        border-radius: 12px;
+        font-size: 15px;
+        font-weight: 700;
+    }
+
+    .zstack-panel .zstack-reset-btn {
+        background: #b33131;
+    }
+
+    .stitching-panel .coordinates-box {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        border-radius: 24px;
+        padding: 18px;
+        min-height: 220px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .stitching-panel .coordinates-box .status-label {
+        color: white;
+        font-size: 16px;
+        margin-bottom: 12px;
+    }
+
+    .stitching-panel .coordinates-box .coordinate-value {
+        color: white;
+        font-size: 15px;
+        line-height: 1.5;
+        white-space: pre-wrap;
+    }
+
+    .main-grid > .panel:nth-of-type(2),
+    .main-grid > .panel:nth-of-type(3),
+    .main-grid > .panel:nth-of-type(4),
+    .filter-panel {
+        min-height: 370px;
+        height: auto;
+    }
+
+    .console-panel {
+        grid-column: 1 / span 4;
+        grid-row: 4;
+        height: 100%;
+    }
+
+    .stage-grid {
+        display: grid;
+        grid-template-columns: 305px 115px 165px;
+        gap: 24px;
+        align-items: start;
+        height: calc(100% - 55px);
+    }
+
+    .stage-panel h2 {
+        font-size: 30px;
+        margin-bottom: 18px;
+    }
+
+    .stage-panel .section-title {
+        color: white;
+        font-size: 26px;
+        font-weight: 700;
+        margin: 10px 0 16px 0;
+        text-align: center;
+    }
+
+    .stage-panel .row {
+        display: flex;
+        align-items: center;
+        margin-bottom: 16px;
+    }
+
+    .stage-panel label {
+        font-size: 23px;
+        font-weight: 700;
+        width: 120px;
+        flex-shrink: 0;
+    }
+
+    .stage-panel input,
+    .stage-panel select {
+        width: 170px;
+        height: 50px;
+        border: none;
+        outline: none;
+        font-size: 21px;
+        padding: 0 10px;
+        box-sizing: border-box;
+        background: #f0f0f0;
+    }
+
+    button {
+        border: none;
+        cursor: pointer;
+        font-weight: 700;
+        font-family: Arial, sans-serif;
+    }
+
+    .stage-panel .move-btn,
+    .stage-panel .small-btn,
+    .stage-panel .stop-btn,
+    .stage-panel .release-btn {
+        width: 92px;
+        height: 48px;
+        margin-bottom: 12px;
+        font-size: 17px;
+        border: 2px solid black;
+        cursor: pointer;
+        font-weight: 700;
+        font-family: Arial, sans-serif;
+    }
+
+    .stage-panel .move-btn,
+    .stage-panel .small-btn {
+        background: #2b9360;
+        color: white;
+    }
+
+    .stage-panel .stop-btn {
+        background: #ff3131;
+        color: white;
+    }
+
+    .stage-panel .release-btn {
+        background: #9e9e9e;
+        color: white;
+        font-size: 12px;
+        line-height: 1.1;
+    }
+
+    .stage-panel .quick-grid {
+        display: grid;
+        grid-template-columns: 72px 72px;
+        gap: 12px 14px;
+        justify-content: center;
+        margin-top: 8px;
+    }
+
+    .stage-panel .quick-grid .small-btn {
+        width: 72px;
+        height: 46px;
+        margin-bottom: 0;
+        font-size: 18px;
+    }
+
+    .stage-panel .xy-buttons {
+        display: grid;
+        grid-template-columns: 92px;
+        gap: 10px;
+        margin-top: 8px;
+    }
+
+    .stage-panel .xy-buttons .small-btn {
+        width: 92px;
+        height: 48px;
+        margin-bottom: 0;
+        font-size: 17px;
+    }
+
+    .stage-panel .position-box {
+        color: white;
+        font-size: 17px;
+        font-weight: 700;
+        margin-top: 8px;
+        text-align: center;
+    }
+
+    .stage-panel .position-box div {
+        margin-bottom: 2px;
+    }
+
+    .stage-panel .home-btn {
+        width: 145px;
+        height: 36px;
+        margin-top: 4px;
+        background: #2b9360;
+        color: white;
+        border: 2px solid black;
+        font-size: 16px;
+        font-weight: 700;
+    }
+
+    .large-pill {
+        border-radius: 40px;
+        width: 200px;
+        height: 72px;
+        margin: 10px auto;
+        display: block;
+        font-size: 26px;
+    }
+
+    .green-pill {
+        background: #2b9360;
+        color: white;
+        border: 2px solid black;
+    }
+
+    .white-pill {
+        background: white;
+        color: black;
+        border: 2px solid black;
+    }
+
+    .black-pill {
+        background: black;
+        color: white;
+        border: 2px solid black;
+    }
+
+    .light-row {
+        display: grid;
+        grid-template-columns: 90px 80px 80px;
+        align-items: center;
+        gap: 8px;
+        margin: 12px 0;
+    }
+
+    .light-label {
+        color: white;
+        font-size: 22px;
+        font-weight: 700;
+        transition: color 0.15s ease;
+    }
+
+    .light-label.active {
+        color: #ffd84d;
+    }
+
+    .on-btn, .off-btn {
+        width: 80px;
+        height: 60px;
+        font-size: 24px;
+        border: 2px solid black;
+    }
+
+    .on-btn {
+        background: #2b9360;
+        color: white;
+    }
+
+    .off-btn {
+        background: #ff3131;
+        color: white;
+    }
+
+    .filter-btn {
+        background: #2b9360;
+        color: white;
+        border-radius: 28px;
+        width: 170px;
+        height: 56px;
+        font-size: 24px;
+        display: block;
+        margin: 12px auto;
+        border: 2px solid black;
+    }
+
+    .filter-btn-active{
+        border: 2px solid rgb(255, 0, 0);
+        background: #310000;
+    }
+
+    .image-panel {
+        display: grid;
+        grid-template-columns: 1fr 1.1fr;
+        grid-template-areas:
+            "title title"
+            "controls preview"
+            "note preview";
+        gap: 10px 14px;
+        align-items: start;
+    }
+
+    .image-panel h2 {
+        grid-area: title;
+    }
+
+    .image-controls {
+        grid-area: controls;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        align-items: center;
+    }
+
+    .image-controls label {
+        color: white;
+        font-size: 16px;
+        font-weight: 700;
+    }
+
+    .image-controls select,
+    .image-controls input {
+        min-height: 40px;
+        border: 2px solid black;
+        border-radius: 10px;
+        padding: 0 10px;
+        font-size: 15px;
+        box-sizing: border-box;
+    }
+
+    .image-btn {
+        background: #2b9360;
+        color: white;
+        border: 2px solid black;
+        border-radius: 14px;
+        width: 140px;
+        height: 44px;
+        font-size: 16px;
+    }
+
+    .image-preview {
+        grid-area: preview;
+        width: 100%;
+        min-height: 180px;
+        border-radius: 24px;
+        background: linear-gradient(135deg, #0f172a, #111827);
+        object-fit: contain;
+        border: 2px solid rgba(255,255,255,0.35);
+        align-self: stretch;
+    }
+
+    .image-note {
+        grid-area: note;
+        color: white;
+        font-size: 13px;
+        line-height: 1.35;
+    }
+
+    #console {
+        background: black;
+        color: #00ff99;
+        width: 100%;
+        min-height: 320px;
+        height: calc(100% - 58px);
+        border-radius: 38px;
+        padding: 16px 20px;
+        font-family: monospace;
+        font-size: 15px;
+        overflow-y: auto;
+        white-space: pre-wrap;
+        box-sizing: border-box;
+    }
+
+    @media (max-width: 1300px) {
+        .main-grid {
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: auto;
+        }
+
+        .stage-panel,
+        .console-panel,
+        .main-grid > .panel:nth-of-type(2),
+        .main-grid > .panel:nth-of-type(3),
+        .main-grid > .panel:nth-of-type(4) {
+            grid-column: auto;
+            grid-row: auto;
+            height: auto;
+        }
+    }
+
+    @media (max-width: 980px) {
+        .main-grid {
+            grid-template-columns: 1fr;
+            grid-template-rows: auto;
+        }
+
+        .stage-panel {
+            grid-column: auto;
+            grid-row: auto;
+        }
+
+        .main-grid > .panel:nth-of-type(2),
+        .main-grid > .panel:nth-of-type(3),
+        .main-grid > .panel:nth-of-type(4) {
+            min-height: 0;
+        }
+    }
+
+    @media (max-width: 900px) {
+        body {
+            overflow-y: auto;
+        }
+
+        .header {
+            min-height: auto;
+            padding: 14px 16px;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .header h1 {
+            font-size: 28px;
+        }
+
+        .logo-img {
+            position: static;
+            width: 56px;
+            height: 56px;
+        }
+
+        .main-grid {
+            grid-template-columns: 1fr;
+            grid-template-rows: auto;
+            height: auto;
+            min-height: auto;
+            padding: 14px;
+            gap: 14px;
+        }
+
+        .panel {
+            border-radius: 24px;
+            overflow: auto;
+            height: auto;
+        }
+
+        .stage-grid {
+            grid-template-columns: 1fr;
+            gap: 14px;
+            height: auto;
+        }
+
+        .stage-panel .row,
+        .stage-panel label,
+        .stage-panel input,
+        .stage-panel select {
+            width: 100%;
+        }
+
+        .stage-panel .row {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .stage-panel .quick-grid,
+        .stage-panel .xy-buttons {
+            justify-content: center;
+        }
+
+        #console {
+            min-height: 320px;
+            height: 320px;
+        }
+    }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <h1>TURTLE Interface</h1>
+        <img src="/static/turtle_logo.png" class="logo-img">
+    </div>
+
+    <div class="main-grid">
+
+        <div class="panel stage-panel">
+            <h2>Stage control</h2>
+
+            <div class="stage-grid">
+                <div>
+                    <div class="section-title">Individual axis</div>
+
+                    <div class="row">
+                        <label>Axis:</label>
+                        <select id="axis">
+                            <option value="x">X axis</option>
+                            <option value="y">Y axis</option>
+                            <option value="z">Z axis</option>
+                        </select>
+                    </div>
+
+                    <div class="row">
+                        <label>Steps:</label>
+                        <input id="steps" type="number" value="1000">
+                    </div>
+
+                    <div class="row">
+                        <label>Delay us:</label>
+                        <input id="delay_us" type="number" value="2000">
+                    </div>
+
+                    <div class="row">
+                        <label>Power %:</label>
+                        <input id="power" type="number" value="80" min="0" max="100">
+                    </div>
+
+                    <div style="height: 8px;"></div>
+
+                    <div class="section-title">Multi axis</div>
+
+                    <div class="row">
+                        <label>X-steps:</label>
+                        <input id="xy_x_steps" type="number" value="1000">
+                    </div>
+
+                    <div class="row">
+                        <label>Y-steps:</label>
+                        <input id="xy_y_steps" type="number" value="1000">
+                    </div>
+
+                    <div class="row">
+                        <label>Delay us:</label>
+                        <input id="xy_delay_us" type="number" value="2000">
+                    </div>
+
+                    <div class="row">
+                        <label>Power %:</label>
+                        <input id="xy_power" type="number" value="70" min="0" max="100">
+                    </div>
+                </div>
+
+                <div>
+                    <div style="height: 58px;"></div>
+                    <button class="move-btn" onclick="movePositive()">Move+</button>
+                    <button class="move-btn" onclick="moveNegative()">Move-</button>
+                    <button class="stop-btn" onclick="stopMotors()">STOP</button>
+                    <button class="release-btn" onclick="releaseMotors()">Release<br>motors</button>
+
+                    <div style="height: 92px;"></div>
+
+                    <div class="xy-buttons">
+                        <button class="small-btn" onclick="moveXY(1, 1)">X+Y+</button>
+                        <button class="small-btn" onclick="moveXY(1, -1)">X+Y-</button>
+                        <button class="small-btn" onclick="moveXY(-1, 1)">X-Y+</button>
+                        <button class="small-btn" onclick="moveXY(-1, -1)">X-Y-</button>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="section-title">Quick acces</div>
+                    <div class="quick-grid">
+                        <button class="small-btn" onclick="quickMove('x', 1)">X+</button>
+                        <button class="small-btn" onclick="quickMove('x', -1)">X-</button>
+                        <button class="small-btn" onclick="quickMove('y', 1)">Y+</button>
+                        <button class="small-btn" onclick="quickMove('y', -1)">Y-</button>
+                        <button class="small-btn" onclick="quickMove('z', 1)">Z+</button>
+                        <button class="small-btn" onclick="quickMove('z', -1)">Z-</button>
+                    </div>
+
+                    <div style="height: 42px;"></div>
+
+                    <div class="section-title">Hold to move</div>
+                    <div class="quick-grid">
+                        <button class="small-btn jog-btn"
+                            onmousedown="startJog('x', 1)"
+                            onmouseup="stopJog()"
+                            onmouseleave="stopJog()"
+                            ontouchstart="startJog('x', 1); event.preventDefault();"
+                            ontouchend="stopJog()">X+</button>
+
+                        <button class="small-btn jog-btn"
+                            onmousedown="startJog('x', -1)"
+                            onmouseup="stopJog()"
+                            onmouseleave="stopJog()"
+                            ontouchstart="startJog('x', -1); event.preventDefault();"
+                            ontouchend="stopJog()">X-</button>
+
+                        <button class="small-btn jog-btn"
+                            onmousedown="startJog('y', 1)"
+                            onmouseup="stopJog()"
+                            onmouseleave="stopJog()"
+                            ontouchstart="startJog('y', 1); event.preventDefault();"
+                            ontouchend="stopJog()">Y+</button>
+
+                        <button class="small-btn jog-btn"
+                            onmousedown="startJog('y', -1)"
+                            onmouseup="stopJog()"
+                            onmouseleave="stopJog()"
+                            ontouchstart="startJog('y', -1); event.preventDefault();"
+                            ontouchend="stopJog()">Y-</button>
+
+                        <button class="small-btn jog-btn"
+                            onmousedown="startJog('z', 1)"
+                            onmouseup="stopJog()"
+                            onmouseleave="stopJog()"
+                            ontouchstart="startJog('z', 1); event.preventDefault();"
+                            ontouchend="stopJog()">Z+</button>
+
+                        <button class="small-btn jog-btn"
+                            onmousedown="startJog('z', -1)"
+                            onmouseup="stopJog()"
+                            onmouseleave="stopJog()"
+                            ontouchstart="startJog('z', -1); event.preventDefault();"
+                            ontouchend="stopJog()">Z-</button>
+                    </div>
+	<div style="height: 18px;"></div>
+
+        <div class="position-box">
+            <div>Position</div>
+            <div>X: <span id="pos_x">0.0</span> µm</div>
+            <div>Y: <span id="pos_y">0.0</span> µm</div>
+            <div>Z: <span id="pos_z">0.0</span> µm</div>
+            <button class="home-btn" onclick="homeStage()">  Home</button>
+        </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel parameters-panel">
+            <h2>Parameters</h2>
+            <div class="param-grid">
+                <div class="param-row">
+                    <label for="objective_magnification">Objective magnification</label>
+                    <input id="objective_magnification" type="number" placeholder="e.g. 20x">
+                </div>
+                <div class="param-row">
+                    <label for="tube_lens_focal_length">Tube lens focal length (mm)</label>
+                    <input id="tube_lens_focal_length" type="number" placeholder="e.g. 200">
+                </div>
+                <div class="param-row">
+                    <label for="imaging_lens_focal_length">Imaging lens focal length (mm)</label>
+                    <input id="imaging_lens_focal_length" type="number" placeholder="e.g. 100 mm">
+                </div>
+                <div class="param-row">
+                    <label for="camera_resolutie">Camera resolutie</label>
+                    <input id="camera_resolutie" type="text" placeholder="e.g. 1920x1080">
+                </div>
+                <div class="param-row">
+                    <label for="camera_pixel_grootte">Camera pixel grootte (µm)</label>
+                    <input id="camera_pixel_grootte" type="number" placeholder="e.g. 5.86 µm">
+                </div>
+                <div class="param-row">
+                    <label>Camera FOV</label>
+                    <div class="fov-values">
+                        <div id="fov_x">FOV X: -</div>
+                        <div id="fov_y">FOV Y: -</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel stitching-panel">
+            <h2>Image stitching</h2>
+            <div class="button-grid">
+                <div class="button-column">
+                    <div class="point-row">
+                        <button class="stitch-btn" onclick="setStitchingPoint(1)">Set point 1</button>
+                        <button class="reset-point-btn" onclick="resetStitchingPoint(1)">Reset point 1</button>
+                    </div>
+                    <div class="point-row">
+                        <button class="stitch-btn" onclick="setStitchingPoint(2)">Set point 2</button>
+                        <button class="reset-point-btn" onclick="resetStitchingPoint(2)">Reset point 2</button>
+                    </div>
+                    <div class="point-row">
+                        <button class="stitch-btn" onclick="setStitchingPoint(3)">Set point 3</button>
+                        <button class="reset-point-btn" onclick="resetStitchingPoint(3)">Reset point 3</button>
+                    </div>
+                    <button class="reset-all-btn" onclick="resetStitchingPoints()">Reset points/stitching</button>
+                </div>
+                <div class="coordinates-box">
+                    <div class="status-label">Point coordinates</div>
+                    <div class="coordinate-value" id="stitching-status">No points set yet.</div>
+                </div>
+                <input id="stitch_folder" type="text" value="foldername" placeholder="stitch">
+                <button class="start-stitch-btn" onclick="startImageStitch()">Start image stitch</button>
+            </div>
+        </div>
+
+        <div class="panel zstack-panel">
+            <h2>Z-stack</h2>
+            <div class="zstack-grid">
+                <div class="zstack-row">
+                    <label for="z_start">Start z</label>
+                    <input id="z_start" type="text" value="0.0" placeholder="Start z" readonly>
+                    <button class="zstack-btn" onclick="setZStart()">Set current Z</button>
+                </div>
+                <div class="zstack-row">
+                    <label for="z_end">End z</label>
+                    <input id="z_end" type="text" value="0.0" placeholder="End z" readonly>
+                    <button class="zstack-btn" onclick="setZEnd()">Set current Z</button>
+                </div>
+                <div class="zstack-row">
+                    <label for="z_steps">Steps</label>
+                    <input id="z_steps" type="number" value="10" min="1" placeholder="Steps">
+                    <button class="zstack-btn" onclick="setZSteps()">Set steps</button>
+                </div>
+                <input id="zstack_folder" type="text" value="foldername" placeholder="zstack">
+                <button class="zstack-btn" onclick="startZStack()">Start z-stack</button>
+                <button class="zstack-reset-btn" onclick="resetZStack()">Reset values</button>
+            </div>
+        </div>
+
+        <div class="panel">
+            <h2>Brightfield /<br>Darkfield switch</h2>
+            <button class="large-pill green-pill" onclick="setServoAngle(90)">Set Servo</button>
+            <button class="large-pill green-pill" onclick="setServoAngle(0)">Brightfield</button>
+            <button class="large-pill green-pill" onclick="setServoAngle(180)">Darkfield</button>
+        </div>
+
+        <div class="panel">
+            <h2>Light source<br>control</h2>
+
+            <div class="light-row">
+                <div id="label-laser1" class="light-label">Laser 1</div>
+                <button class="on-btn" onclick="setLight('laser1', true)">ON</button>
+                <button class="off-btn" onclick="setLight('laser1', false)">OFF</button>
+            </div>
+
+            <div class="light-row">
+                <div id="label-laser2" class="light-label">Laser 2</div>
+                <button class="on-btn" onclick="setLight('laser2', true)">ON</button>
+                <button class="off-btn" onclick="setLight('laser2', false)">OFF</button>
+            </div>
+
+            <div class="light-row">
+                <div id="label-led" class="light-label">LED</div>
+                <button class="on-btn" onclick="setLight('led', true)">ON</button>
+                <button class="off-btn" onclick="setLight('led', false)">OFF</button>
+            </div>
+        </div>
+
+        <div class="panel filter-panel">
+            <h2 style="text-align:center;">Filter array</h2>
+            <button class="filter-btn" onclick="goToFilter(1)">Filter 1</button>
+            <button class="filter-btn" onclick="goToFilter(2)">Filter 2</button>
+            <button class="filter-btn" onclick="goToFilter(3)">Filter 3</button>
+            <button class="filter-btn" onclick="goToFilter(4)">Filter 4</button>
+        </div>
+
+        <div class="panel image-panel" style="grid-column: 2 / span 3; grid-row: 2; min-height: 260px;">
+            <h2>Image capture</h2>
+            <div class="image-controls">
+                <label for="image_format">Format</label>
+                <select id="image_format">
+                    <option value="raw">raw</option>
+                    <option value="JPEG">JPEG</option>
+                    <option value="PNG">PNG</option>
+                    <option value="TIFF">TIFF</option>
+                    <option value="BMP">BMP</option>
+                </select>
+                <label for="image_filename">Filename</label>
+                <input id="image_filename" type="text" value="filename" placeholder="">
+                <button class="image-btn" onclick="captureImage()">Capture</button>
+                <button id="livestream-toggle-btn" class="image-btn" onclick="toggleLivestream()">Start livestream</button>
+            </div>
+            <img id="image-preview" class="image-preview" src="/images/livestream.jpg?t=" alt="Livestream preview">
+            <div class="image-note">Use the toggle to overwrite livestream.jpg every 0.2 s. Capture still saves the selected image to disk.</div>
+        </div>
+
+        <div class="panel console-panel">
+            <h2>Console</h2>
+            <div id="console"></div>
+        </div>
+
+    </div>
+
+<script>
+function log(message) {
+    const consoleBox = document.getElementById("console");
+    consoleBox.textContent += message + "\\n";
+    consoleBox.scrollTop = consoleBox.scrollHeight;
+}
+
+async function postJSON(url, data) {
+    const response = await fetch(url, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
+    });
+
+    const result = await response.json();
+    log(JSON.stringify(result));
+    return result;
+}
+
+let jogActive = false;
+
+function startJog(axis, direction) {
+    if (jogActive) {
+        return;
+    }
+
+    jogActive = true;
+
+    const delay_us = parseInt(document.getElementById("delay_us").value);
+    const power = parseInt(document.getElementById("power").value);
+
+    postJSON("/api/jog", {
+        axis: axis,
+        direction: direction,
+        delay_us: delay_us,
+        power: power
+    });
+}
+
+function stopJog() {
+    if (!jogActive) {
+        return;
+    }
+
+    jogActive = false;
+    postJSON("/api/stop", {});
+}
+
+async function updatePosition() {
+    try {
+        const response = await fetch("/api/state");
+        const result = await response.json();
+
+        const UM_PER_STEP = 2 * 1000 / 4096;
+
+        if (result.position) {
+            document.getElementById("pos_x").innerText = (result.position.x * UM_PER_STEP).toFixed(1);
+            document.getElementById("pos_y").innerText = (result.position.y * UM_PER_STEP).toFixed(1);
+            document.getElementById("pos_z").innerText = (result.position.z * UM_PER_STEP).toFixed(1);
+        }
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+function homeStage() {
+    postJSON("/api/home", {
+        delay_us: parseInt(document.getElementById("delay_us").value),
+        power: parseInt(document.getElementById("power").value)
+    });
+}
+
+setInterval(updatePosition, 1000);
+
+function getStepperSettings() {
+    return {
+        axis: document.getElementById("axis").value,
+        steps: parseInt(document.getElementById("steps").value),
+        delay_us: parseInt(document.getElementById("delay_us").value),
+        power: parseInt(document.getElementById("power").value)
+    };
+}
+
+function movePositive() {
+    let settings = getStepperSettings();
+    moveStepper(settings.axis, settings.steps, settings.delay_us, settings.power);
+}
+
+function moveNegative() {
+    let settings = getStepperSettings();
+    moveStepper(settings.axis, -settings.steps, settings.delay_us, settings.power);
+}
+
+function quickMove(axis, direction) {
+    let settings = getStepperSettings();
+    moveStepper(axis, direction * settings.steps, settings.delay_us, settings.power);
+}
+
+function moveStepper(axis, steps, delay_us, power) {
+    postJSON("/api/stepper", {
+        axis: axis,
+        steps: steps,
+        delay_us: delay_us,
+        power: power
+    });
+}
+
+function moveXY(xDirection, yDirection) {
+    const xSteps = parseInt(document.getElementById("xy_x_steps").value);
+    const ySteps = parseInt(document.getElementById("xy_y_steps").value);
+    const delay_us = parseInt(document.getElementById("xy_delay_us").value);
+    const power = parseInt(document.getElementById("xy_power").value);
+
+    postJSON("/api/move_xy", {
+        x_steps: xDirection * xSteps,
+        y_steps: yDirection * ySteps,
+        delay_us: delay_us,
+        power: power
+    });
+}
+
+function stopMotors() {
+    postJSON("/api/stop", {});
+}
+
+function releaseMotors() {
+    postJSON("/api/release", {});
+}
+
+function updateServoLabel(angle) {
+    const buttons = document.getElementsByClassName("green-pill");
+    for (let btn of buttons) {
+        btn.classList.toggle("filter-btn-active", btn.onclick.toString().includes("setServoAngle(" + angle + ")"));
+    }
+}
+function setServoAngle(angle) {
+    updateServoLabel(angle)
+
+    postJSON("/api/servo", {
+        angle: angle
+    });
+}
+
+function updateLightLabel(light, state) {
+    const label = document.getElementById("label-" + light);
+    if (!label) {
+        return;
+    }
+
+    label.classList.toggle("active", Boolean(state));
+}
+
+function setLight(light, state) {
+    updateLightLabel(light, state);
+
+    postJSON("/api/light", {
+        light: light,
+        state: state
+    });
+}
+
+function setFilterActive(filterNumber) {
+    const buttons = document.getElementsByClassName("filter-btn");
+    for (let btn of buttons) {
+        btn.classList.toggle("filter-btn-active", btn.onclick.toString().includes("goToFilter(" + filterNumber + ")"));
+    }
+}
+
+function goToFilter(filterNumber) {
+    setFilterActive(filterNumber);
+
+    postJSON("/api/filter", {
+        filter: filterNumber,
+        delay_us: 5000
+    });
+}
+
+let stitchingPoints = [];
+
+function updateStitchingStatus() {
+    const label = document.getElementById("stitching-status");
+    if (!label) {
+        return;
+    }
+
+    if (stitchingPoints.length === 0) {
+        label.textContent = "No points set yet.";
+        return;
+    }
+
+    const entries = stitchingPoints.map((point, index) => {
+        if (!point) {
+            return `Point ${index + 1}: unset`;
+        }
+        return `Point ${index + 1}: X=${point.x} µm, Y=${point.y} µm`;
+    });
+
+    label.textContent = entries.join("\r\n");
+}
+
+function setStitchingPoint(pointIndex) {
+    const x = document.getElementById("pos_x")?.innerText || "0.0";
+    const y = document.getElementById("pos_y")?.innerText || "0.0";
+
+    stitchingPoints[pointIndex - 1] = {
+        x: x,
+        y: y,
+        timestamp: Date.now()
+    };
+
+    updateStitchingStatus();
+    log(`Set stitching point ${pointIndex}: X=${x}, Y=${y}`);
+}
+
+function resetStitchingPoint(pointIndex) {
+    stitchingPoints[pointIndex - 1] = null;
+    updateStitchingStatus();
+    log(`Reset stitching point ${pointIndex}.`);
+}
+
+function resetStitchingPoints() {
+    stitchingPoints = [];
+    updateStitchingStatus();
+    log("Reset stitching points.");
+}
+
+function startImageStitch() {
+    const foldername = (document.getElementById("stitch_folder").value || "stitch").trim() || "foldername";
+    const fovX = parseFloat((document.getElementById("fov_x").textContent || "").replace(/[^0-9.\-]/g, ""));
+    const fovY = parseFloat((document.getElementById("fov_y").textContent || "").replace(/[^0-9.\-]/g, ""));
+
+    postJSON("/api/stitch", {
+        points: stitchingPoints,
+        foldername: foldername,
+        camera_fov_x: Number.isFinite(fovX) ? fovX : null,
+        camera_fov_y: Number.isFinite(fovY) ? fovY : null
+    });
+    log("Started image stitching.");
+}
+
+let zStackSettings = {
+    start: 0,
+    end: 100,
+    steps: 10
+};
+
+function setZStart() {
+    const z = parseFloat(document.getElementById("pos_z")?.innerText || 0);
+    zStackSettings.start = z;
+    document.getElementById("z_start").value = z.toFixed(1);
+    log("Z-stack start set to " + zStackSettings.start + " µm");
+}
+
+function setZEnd() {
+    const z = parseFloat(document.getElementById("pos_z")?.innerText || 0);
+    zStackSettings.end = z;
+    document.getElementById("z_end").value = z.toFixed(1);
+    log("Z-stack end set to " + zStackSettings.end + " µm");
+}
+
+function setZSteps() {
+    zStackSettings.steps = parseInt(document.getElementById("z_steps").value || 1);
+    log("Z-stack steps set to " + zStackSettings.steps);
+}
+
+function startZStack() {
+    setZStart();
+    setZEnd();
+    setZSteps();
+    log("Starting z-stack from " + zStackSettings.start + " to " + zStackSettings.end + " in " + zStackSettings.steps + " steps.");
+}
+
+function resetZStack() {
+    document.getElementById("z_start").value = "0.0";
+    document.getElementById("z_end").value = "0.0";
+    document.getElementById("z_steps").value = 10;
+    zStackSettings = { start: 0, end: 0, steps: 10 };
+    log("Reset z-stack values.");
+}
+
+function getImageExtension(outputType) {
+    if (outputType === "JPEG") return ".jpg";
+    if (outputType === "PNG") return ".png";
+    if (outputType === "TIFF") return ".tif";
+    if (outputType === "BMP") return ".bmp";
+    return ".raw";
+}
+
+let livestreamTimer = null;
+let livestreamEnabled = false;
+let livestreamRequestInFlight = false;
+
+function updateLivestreamPreview() {
+    const preview = document.getElementById("image-preview");
+    if (!preview) {
+        return;
+    }
+
+    preview.src = "/images/livestream.jpg?t=" + Date.now();
+    preview.alt = "Livestream preview";
+}
+
+function captureLivestreamFrame() {
+    if (livestreamRequestInFlight) {
+        return;
+    }
+
+    livestreamRequestInFlight = true;
+
+    fetch("/api/livestream", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" }
+    }).then((response) => response.json())
+      .then((result) => {
+          if (result && result.success) {
+              updateLivestreamPreview();
+          }
+      })
+      .catch(() => {})
+      .finally(() => {
+          livestreamRequestInFlight = false;
+      });
+}
+
+function setLivestreamEnabled(enabled) {
+    livestreamEnabled = enabled;
+    const toggleButton = document.getElementById("livestream-toggle-btn");
+
+    if (toggleButton) {
+        toggleButton.textContent = enabled ? "Stop livestream" : "Start livestream";
+    }
+
+    if (enabled) {
+        if (!livestreamTimer) {
+            livestreamTimer = setInterval(captureLivestreamFrame, 200);
+        }
+        captureLivestreamFrame();
+    } else if (livestreamTimer) {
+        clearInterval(livestreamTimer);
+        livestreamTimer = null;
+    }
+}
+
+function toggleLivestream() {
+    setLivestreamEnabled(!livestreamEnabled);
+}
+
+function getCameraParameters() {
+    return {
+        objectiveMagnification: document.getElementById("objective_magnification").value.trim(),
+        tubeLensFocalLength: document.getElementById("tube_lens_focal_length").value.trim(),
+        imagingLensFocalLength: document.getElementById("imaging_lens_focal_length").value.trim(),
+        cameraResolutie: document.getElementById("camera_resolutie").value.trim(),
+        cameraPixelGrootte: document.getElementById("camera_pixel_grootte").value.trim()
+    };
+}
+
+function recalcCameraFOV() {
+    const params = getCameraParameters();
+
+    function parseNumber(value) {
+        if (!value) {
+            return NaN;
+        }
+        const cleaned = value.replace(",", ".").match(/-?[0-9]*\.?[0-9]+/);
+        return cleaned ? parseFloat(cleaned[0]) : NaN;
+    }
+
+    function parseResolution(value) {
+        if (!value) {
+            return null;
+        }
+        const match = value.match(/(\d+)\s*[x×]\s*(\d+)/i);
+        return match ? [parseInt(match[1], 10), parseInt(match[2], 10)] : null;
+    }
+
+    const objectiveMag = parseNumber(params.objectiveMagnification);
+    const tubeLensFL = parseNumber(params.tubeLensFocalLength);
+    const imagingLensFL = parseNumber(params.imagingLensFocalLength);
+    const pixelSizeUm = parseNumber(params.cameraPixelGrootte);
+    const resolution = parseResolution(params.cameraResolutie);
+
+    let fovX = "TBD";
+    let fovY = "TBD";
+
+    if (
+        Number.isFinite(objectiveMag) &&
+        Number.isFinite(imagingLensFL) &&
+        Number.isFinite(tubeLensFL) &&
+        Number.isFinite(pixelSizeUm) &&
+        resolution &&
+        resolution[0] > 0 &&
+        resolution[1] > 0
+    ) {
+        const effectiveMagnification = objectiveMag * (imagingLensFL / tubeLensFL);
+        const sensorWidthUm = resolution[0] * pixelSizeUm;
+        const sensorHeightUm = resolution[1] * pixelSizeUm;
+        const calcFovX = sensorWidthUm / effectiveMagnification;
+        const calcFovY = sensorHeightUm / effectiveMagnification;
+
+        fovX = `${calcFovX.toFixed(1)} µm`;
+        fovY = `${calcFovY.toFixed(1)} µm`;
+    }
+
+    document.getElementById("fov_x").textContent = `FOV X: ${fovX}`;
+    document.getElementById("fov_y").textContent = `FOV Y: ${fovY}`;
+}
+
+function bindCameraParamInputs() {
+    [
+        "objective_magnification",
+        "tube_lens_focal_length",
+        "imaging_lens_focal_length",
+        "camera_resolutie",
+        "camera_pixel_grootte"
+    ].forEach((id) => {
+        const input = document.getElementById(id);
+        if (input) {
+            input.addEventListener("input", recalcCameraFOV);
+        }
+    });
+}
+
+function captureImage() {
+    const outputType = document.getElementById("image_format").value;
+    const filename = (document.getElementById("image_filename").value || "capture").trim() || "filename";
+    const preview = document.getElementById("image-preview");
+
+    preview.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='240'%3E%3Crect width='400' height='240' fill='%23111827'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dominant-baseline='middle' fill='white' font-family='Arial' font-size='16'%3ECapturing image...%3C/text%3E%3C/svg%3E";
+
+    postJSON("/api/pictures", {
+        filename: filename,
+        output_type: outputType
+    }).then((result) => {
+        if (result && result.success) {
+            if (!livestreamEnabled) {
+                const imageUrl = "/images/" + filename + getImageExtension(outputType) + "?t=" + Date.now();
+                preview.src = imageUrl;
+                preview.alt = "Captured image preview";
+            }
+            log("Saved image: " + filename + getImageExtension(outputType));
+        } else {
+            preview.alt = "Capture failed";
+            log("Image capture failed: " + JSON.stringify(result));
+        }
+    }).catch((error) => {
+        preview.alt = "Capture failed";
+        log("Image capture error: " + error);
+    });
+}
+
+setLivestreamEnabled(false);
+    bindCameraParamInputs();
+    recalcCameraFOV();
+function takePicture(filename, outputType) {
+    return captureImage();
+}
+</script>
+
+</body>
+</html>
