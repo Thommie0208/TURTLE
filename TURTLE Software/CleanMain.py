@@ -9,6 +9,7 @@ import select
 # -------------------------
 
 STBY_PIN = 12
+SERVO_PIN = 15
 
 TB6612_MOTORS = {
     "x": {"ain1": 2,  "ain2": 1,  "pwma": 0,  "bin1": 3,  "bin2": 4,  "pwmb": 5},
@@ -59,6 +60,9 @@ stage_position = {
 # -------------------------
 # Setup
 # -------------------------
+servo_pwm = PWM(Pin(SERVO_PIN))
+servo_pwm.freq(50)
+servo_pwm.duty_u16(0)
 
 tb6612_stby = Pin(STBY_PIN, Pin.OUT)
 tb6612_stby.value(1)
@@ -114,18 +118,34 @@ def reply(data):
     print(json.dumps(data))
 
 
-def check_for_stop():
+def process_pending_commands():
     global stop_requested
 
-    if poll.poll(0):
+    while poll.poll(0):
         line = sys.stdin.readline().strip()
+
+        if not line:
+            continue
 
         try:
             data = json.loads(line)
-            if data.get("cmd") == "stop":
-                stop_requested = True
-        except:
-            pass
+        except Exception:
+            continue
+
+        cmd = data.get("cmd")
+
+        if cmd == "stop":
+            stop_requested = True
+            reply({"ok": True, "cmd": "stop"})
+        elif cmd == "state":
+            position_reply()
+        elif cmd == "release":
+            release_all()
+            reply({"ok": True, "cmd": "release"})
+        else:
+            # Ignore other movement commands while a motor action is already active.
+            reply({"ok": False, "error": "busy", "cmd": cmd})
+
 
 def get_limit(axis):
     if axis == "x":
@@ -230,7 +250,7 @@ def move_tb6612(axis, steps, delay_us, power):
 
         tb6612_step(axis, direction)
         time.sleep_us(delay_us)
-        check_for_stop()
+        process_pending_commands()
 
     tb6612_release(motor)
 
@@ -268,7 +288,7 @@ def jog_tb6612(axis, direction, delay_us, power):
 
         tb6612_step(axis, direction)
         time.sleep_us(delay_us)
-        check_for_stop()
+        process_pending_commands()
 
     tb6612_release(motor)
     reply({"ok": True})
@@ -331,7 +351,7 @@ def move_xy(x_steps, y_steps, delay_us, power):
             y_error -= total_steps
 
         time.sleep_us(delay_us)
-        check_for_stop()
+        process_pending_commands()
 
     tb6612_release(tb6612_motors["x"])
     tb6612_release(tb6612_motors["y"])
@@ -406,13 +426,33 @@ def move_uln2003(axis, steps, delay_us):
         uln2003_apply_step(motor)
 
         time.sleep_us(delay_us)
-        check_for_stop()
+        process_pending_commands()
 
     uln2003_release(motor)
 
     reply({"ok": True})
 
+def set_servo_angle(angle):
+    angle = int(angle)
 
+    if angle < 0:
+        angle = 0
+    if angle > 180:
+        angle = 180
+
+    # 50 Hz servo signal:
+    # 0 degrees   ≈ 0.5 ms pulse
+    # 180 degrees ≈ 2.5 ms pulse
+    pulse_us = 500 + (angle / 180) * 2000
+
+    # 20 ms period at 50 Hz
+    duty = int((pulse_us / 20000) * 65535)
+
+    servo_pwm.duty_u16(duty)
+    time.sleep(0.3)
+    servo_pwm.duty_u16(0)
+
+    reply({"ok": True})
 # -------------------------
 # Command handling
 # -------------------------
@@ -476,7 +516,9 @@ def handle_command(line):
     elif cmd == "release":
         release_all()
         reply({"ok": True})
-    
+
+    elif cmd == "servo":
+        set_servo_angle(data.get("angle", 90))
     else:
         reply({"ok": False, "error": "unknown command"})
 
