@@ -17,10 +17,11 @@ WD_obj = 17         #mm - Working distance of the objective (17)(9)
 f_tube_corr = 180   #mm - Focal length of the corresponding tube lens (the tube lens from the same company as the objective)
 f_imaging = 200     #mm - Effective focal length of the imaging lens (most commonly an achromatic doublet or a tube lens)
 d_imaging = 25      #mm - Diameter of the imaging lens (most commonly an achromatic doublet or a tube lens)
-f_laser_shape = 200 #mm - Effective focal length of the lens used for the beam expansion of the lasers
+f_ach_l_shape = 150 #mm - Effective focal length of the lens used for focusing the expanded laser beam onto the objective back focal point
+f_asp_l_shape = 10  #mm - Focal length of the lens used to focus the laser beam into the optical fiber
 
 #filters
-d_f = 22        #mm - clear aperature of the filter
+d_f = 22            #mm - clear aperature of the filter
 
 #mirrors
 h_m = 25            #mm - Height of the second mirror (eliptical)
@@ -35,10 +36,11 @@ h_dg = 1            #mm - Gasket height on the dichroic
 w_dg = 1            #mm - Gasket width on the dichroic
 
 #distances between optical components
-L_1 = 60        #mm - Distance between the objective and the midpoint of the first mirror
-L_2 = 90        #mm - Distance between the midpoint of the first and the midpoint of the second mirror
-L_dich = 30     #mm - Distance between the midpoint of the second mirror and the midpoint of the dichroic mirror
-L_f = 55        #mm - Distance between the midpoint of the second mirror and the emission filter
+L_1 = 76        #mm - Distance between the objective and the midpoint of the first mirror
+L_dich = 43     #mm - Distance between the midpoint of the first mirror and the midpoint of the dichroic mirror
+L_2 = 90        #mm - Distance between the midpoint of the first mirror and the midpoint of the second mirror
+L_f = 25        #mm - Distance between the midpoint of the second mirror and the emission filter
+L_3 = 40        #mm - Distance between the midpoint of the second mirror and the imaging lens
 
 #lasers
 d_laser = 3.5     #mm - diameter of the laser beam emitted by the laser pointer (edmond: 1mm)(thorlabs: 3.5mm)
@@ -51,7 +53,6 @@ emis_wl = 510   #nm - Smallest flourescence emission wave length
 
 
 ### Microscope characteristics
-L_3 = f_imaging - L_1 - L_2
 L_4 = f_imaging
 
 f_obj = f_tube_corr / M_obj
@@ -72,34 +73,33 @@ diag_FOV_cam = np.sqrt(w_FOV_cam**2 + h_FOV_cam**2)
 ### Component limited FOV
 # maximum height FOV (independent of the mirror angle)
 h_max_phi_m1 = np.arctan((h_m - 2 * w_mg - d_pup) / (2 * L_1))
+h_max_phi_dich = np.arctan((((h_dich - 2 * w_dg - 2 * h_dg)/ np.sqrt(2)) - d_pup) / (2 * (L_1 + L_dich))) ###GAAT NOG IETS FOUT, want origineel stond ie achter de 2 spiegel (np.arctan((((h_dich - 2 * w_dg - 2 * h_dg)/ np.sqrt(2)) - d_pup) / (2 * (L_1 + L_2 + L_dich))))
 h_max_phi_m2 = np.arctan((h_m - 2 * w_mg - d_pup) / (2 * (L_1 + L_2)))
-h_max_phi_dich = np.arctan((((h_dich - 2 * w_dg - 2 * h_dg)/ np.sqrt(2)) - d_pup) / (2 * (L_1 + L_2 + L_dich)))
 h_max_phi_filter = np.arctan((d_f  - d_pup) / (2 * (L_1 + L_2 + L_f)))
 h_max_phi_lens = np.arctan((d_imaging - d_pup) / (2 * (L_1 + L_2 + L_3)))
 
 h_max_phi = np.array([h_max_phi_m1, h_max_phi_m2, h_max_phi_dich, h_max_phi_filter, h_max_phi_lens])
 h_phi_crit = np.min(h_max_phi)
 h_FOV_crit = 2 * f_obj * np.tan(h_phi_crit)
-#h_FOV_crit = 2 * WD_obj * np.tan(h_phi_crit)    #mm  (old method)
 
 # maximum width FOV (dependent on the mirror angle and at this point a mirror angle of 45 deg is assumed)
 w_proj_m = (w_m - 2 * w_mg - 2 * h_mg) / np.sqrt(2)
 
 w_max_phi_m1 = np.arctan((w_proj_m - d_pup) / (2 * L_1 + w_proj_m))
+w_max_phi_dich = np.arctan((w_dich - 2* w_dg - d_pup) / (2 * (L_1 + L_dich)))       ###GAAT NOG IETS FOUT, want dit is deels van toen die achter de weede mirror stond.
 w_max_phi_m2 = np.arctan((w_proj_m - d_pup) / (2* L_1 + 2 * L_2 + w_proj_m))
-w_max_phi_dich = np.arctan((w_dich - 2* w_dg - d_pup) / (2 * (L_1 + L_2 + L_dich)))
 w_max_phi_filter = np.arctan((d_f - d_pup) / (2 * (L_1 + L_2 + L_f)))
 w_max_phi_lens = np.arctan((d_imaging - d_pup) / (2 * (L_1 + L_2 + L_3)))
 
 w_max_phi = np.array([w_max_phi_m1, w_max_phi_m2, w_max_phi_dich, w_max_phi_filter, w_max_phi_lens])
 w_phi_crit = np.min(w_max_phi)
 w_FOV_crit = 2 * f_obj * np.tan(w_phi_crit)     #mm
-#w_FOV_crit = 2 * WD_obj * np.tan(w_phi_crit)    #mm (old method_)
+
+# determining the smallest diagonal
+crit_res = np.array([w_FOV_crit, h_FOV_crit])
+crit_diag = np.min(crit_res)
 
 ### Spare room calculation
-#h_needed_phi = np.arctan(h_FOV_cam / (2 * WD_obj))     (old method)
-#w_needed_phi = np.arctan(w_FOV_cam / (2 * WD_obj))     (old method)
-
 h_needed_phi = np.arctan(h_FOV_cam / (2 * f_obj))
 w_needed_phi = np.arctan(w_FOV_cam / (2 * f_obj))
 
@@ -135,21 +135,20 @@ d_imagefield = np.sqrt((h_sensor_cam**2) + (w_sensor_cam**2))
 L_max = (d_imaging - d_pup) * f_imaging / d_imagefield
 
 ### Laser beam expansion
-# M_needed = w_FOV_crit / d_laser
-# f_needed = f_obj / M_needed
 
-# M_shape = 
+beam_width = w_FOV_crit / (f_obj / f_ach_l_shape)
+f_needed = f_asp_l_shape * beam_width / d_laser
 
 ### Test prints
 # print(h_max_phi * 180 / np.pi)
 # print(w_max_phi * 180 / np.pi)
-# print()
+# print(crit_diag)
 # print(h_d_dev)
 # print(w_d_dev)
 # print(w_d_dev_m1_nc)
 # print(w_d_dev_m2_nc)
 # print(L_max)
-# print(M_needed)
+# print(beam_width)
 # print(f_needed)
 
 
@@ -166,9 +165,7 @@ print(f"\nMicroscope magnification: {M_true:.2f}\n"
       f"Maximum allowable FOV: {w_FOV_crit:.3f} x {h_FOV_crit:.3f} (in mm x mm).\n" 
       f"Camera FOV: {w_FOV_cam:.3f} x {h_FOV_cam:.3f} (in mm x mm) with a diagonal of {diag_FOV_cam:.3f} mm.")
 
-
-
-if w_FOV_cam > w_FOV_crit:
+if diag_FOV_cam > crit_diag:
     if np.argmax(w_max_phi) == 1:
         print('As the FOV width of the camera is bigger than the by the components allowed FOV width, information will be lost.\n' 
               'The first mirror is the limiting factor, due to its width and distance from the objective')
@@ -184,27 +181,11 @@ if w_FOV_cam > w_FOV_crit:
     else:
         print('As the FOV width of the camera is bigger than the by the components allowed FOV width, information will be lost.\n' 
               'The imaging lens is the limiting factor, due to its width and distance from the objective')
-if h_FOV_cam > h_FOV_crit:
-    if np.argmax(h_max_phi) == 1:
-        print('As the FOV height of the camera is bigger than the by the components allowed FOV height, information will be lost.\n' 
-              'The first mirror is the limiting factor, due to its height and distance from the objective')
-    elif np.argmax(h_max_phi) == 2:
-        print('As the FOV height of the camera is bigger than the by the components allowed FOV height, information will be lost.\n' 
-              'The second mirror is the limiting factor, due to its height and distance from the objective')
-    elif np.argmax(h_max_phi) == 3:
-        print('As the FOV height of the camera is bigger than the by the components allowed FOV height, information will be lost.\n' 
-              'The dichroic mirror is the limiting factor, due to its height and distance from the objective')
-    elif np.argmax(h_max_phi) == 4:
-        print('As the FOV height of the camera is bigger than the by the components allowed FOV height, information will be lost.\n' 
-              'The filter is the limiting factor, due to its height and distance from the objective')
-    else:
-        print('As the FOV height of the camera is bigger than the by the components allowed FOV height, information will be lost.\n' 
-              'The imaging lens is the limiting factor, due to its height and distance from the objective')
 
-if w_FOV_cam < w_FOV_crit and h_FOV_cam < h_FOV_crit:
+if diag_FOV_cam < crit_diag:
     print('No information will be lost, as the FOV of the camera is smaller than the by the components allowed FOV\n')
 
-print(f'\nObjective resolution: {res_obj:.2f} \n'
+print(f'Objective resolution: {res_obj:.2f} \n'
       f'Camera resolution (after Nyquist, 2.3x): {Nyquist_cam:.2f}')
 
 if res_obj > Nyquist_cam:
@@ -219,3 +200,39 @@ print('\nThe spare room on the optical components (in mm) is:\n'
       f'top/bottom:     {h_d_dev_m1:.2f}         {h_d_dev_m2:.2f}          {h_d_dev_dich:.2f}        {h_d_dev_filter:.2f}      {h_d_dev_lens:.2f}\n'
       f'critical:       {w_d_dev_m1:.2f}         {w_d_dev_m2:.2f}           ^           ^         ^\n'
       f'non-critical:   {w_d_dev_m1_nc:.2f}         {w_d_dev_m2_nc:.2f}          {w_d_dev_dich:.2f}        {w_d_dev_filter:.2f}      {w_d_dev_lens:.2f}\n')
+
+print(f'The minimal focal length needed for collimating the laser beam out of the optical fiber is: {f_needed:.2f} mm\n')
+
+
+# if w_FOV_cam > w_FOV_crit:
+#     if np.argmax(w_max_phi) == 1:
+#         print('As the FOV width of the camera is bigger than the by the components allowed FOV width, information will be lost.\n' 
+#               'The first mirror is the limiting factor, due to its width and distance from the objective')
+#     elif np.argmax(w_max_phi) == 2:
+#         print('As the FOV width of the camera is bigger than the by the components allowed FOV width, information will be lost.\n' 
+#               'The second mirror is the limiting factor, due to its width and distance from the objective')
+#     elif np.argmax(w_max_phi) == 3:
+#         print('As the FOV width of the camera is bigger than the by the components allowed FOV width, information will be lost.\n' 
+#               'The dichroic mirror is the limiting factor, due to its width and distance from the objective')
+#     elif np.argmax(w_max_phi) == 4:
+#         print('As the FOV width of the camera is bigger than the by the components allowed FOV width, information will be lost.\n' 
+#               'The filter is the limiting factor, due to its width and distance from the objective')
+#     else:
+#         print('As the FOV width of the camera is bigger than the by the components allowed FOV width, information will be lost.\n' 
+#               'The imaging lens is the limiting factor, due to its width and distance from the objective')
+# if h_FOV_cam > h_FOV_crit:
+#     if np.argmax(h_max_phi) == 1:
+#         print('As the FOV height of the camera is bigger than the by the components allowed FOV height, information will be lost.\n' 
+#               'The first mirror is the limiting factor, due to its height and distance from the objective')
+#     elif np.argmax(h_max_phi) == 2:
+#         print('As the FOV height of the camera is bigger than the by the components allowed FOV height, information will be lost.\n' 
+#               'The second mirror is the limiting factor, due to its height and distance from the objective')
+#     elif np.argmax(h_max_phi) == 3:
+#         print('As the FOV height of the camera is bigger than the by the components allowed FOV height, information will be lost.\n' 
+#               'The dichroic mirror is the limiting factor, due to its height and distance from the objective')
+#     elif np.argmax(h_max_phi) == 4:
+#         print('As the FOV height of the camera is bigger than the by the components allowed FOV height, information will be lost.\n' 
+#               'The filter is the limiting factor, due to its height and distance from the objective')
+#     else:
+#         print('As the FOV height of the camera is bigger than the by the components allowed FOV height, information will be lost.\n' 
+#               'The imaging lens is the limiting factor, due to its height and distance from the objective')
