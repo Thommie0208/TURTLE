@@ -9,6 +9,7 @@ import select
 # -------------------------
 
 STBY_PIN = 12
+SERVO_PIN = 15
 
 TB6612_MOTORS = {
     "x": {"ain1": 2,  "ain2": 1,  "pwma": 0,  "bin1": 3,  "bin2": 4,  "pwmb": 5},
@@ -59,6 +60,9 @@ stage_position = {
 # -------------------------
 # Setup
 # -------------------------
+servo_pwm = PWM(Pin(SERVO_PIN))
+servo_pwm.freq(50)
+servo_pwm.duty_u16(0)
 
 tb6612_stby = Pin(STBY_PIN, Pin.OUT)
 tb6612_stby.value(1)
@@ -428,7 +432,27 @@ def move_uln2003(axis, steps, delay_us):
 
     reply({"ok": True})
 
+def set_servo_angle(angle):
+    angle = int(angle)
 
+    if angle < 0:
+        angle = 0
+    if angle > 180:
+        angle = 180
+
+    # 50 Hz servo signal:
+    # 0 degrees   ≈ 0.5 ms pulse
+    # 180 degrees ≈ 2.5 ms pulse
+    pulse_us = 500 + (angle / 180) * 2000
+
+    # 20 ms period at 50 Hz
+    duty = int((pulse_us / 20000) * 65535)
+
+    servo_pwm.duty_u16(duty)
+    time.sleep(0.3)
+    servo_pwm.duty_u16(0)
+
+    reply({"ok": True})
 # -------------------------
 # Command handling
 # -------------------------
@@ -492,7 +516,9 @@ def handle_command(line):
     elif cmd == "release":
         release_all()
         reply({"ok": True})
-    
+
+    elif cmd == "servo":
+        set_servo_angle(data.get("angle", 90))
     else:
         reply({"ok": False, "error": "unknown command"})
 
