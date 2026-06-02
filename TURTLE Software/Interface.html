@@ -1016,6 +1016,7 @@ async function postJSON(url, data) {
 }
 
 let jogActive = false;
+let jogReleaseHandler = null;
 
 function startJog(axis, direction) {
     if (jogActive) {
@@ -1023,6 +1024,11 @@ function startJog(axis, direction) {
     }
 
     jogActive = true;
+
+    jogReleaseHandler = () => stopJog();
+    window.addEventListener("mouseup", jogReleaseHandler);
+    window.addEventListener("touchend", jogReleaseHandler);
+    window.addEventListener("touchcancel", jogReleaseHandler);
 
     const delay_us = parseInt(document.getElementById("delay_us").value);
     const power = parseInt(document.getElementById("power").value);
@@ -1036,6 +1042,13 @@ function startJog(axis, direction) {
 }
 
 function stopJog() {
+    if (jogReleaseHandler) {
+        window.removeEventListener("mouseup", jogReleaseHandler);
+        window.removeEventListener("touchend", jogReleaseHandler);
+        window.removeEventListener("touchcancel", jogReleaseHandler);
+        jogReleaseHandler = null;
+    }
+
     if (!jogActive) {
         return;
     }
