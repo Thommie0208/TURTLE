@@ -1275,9 +1275,12 @@ function setZSteps() {
 }
 
 function startZStack() {
-    setZStart();
-    setZEnd();
-    setZSteps();
+    postJSON("/api/stack", {
+        start: zStackSettings.start,
+        end: zStackSettings.end,
+        steps: zStackSettings.steps,
+        foldername: (document.getElementById("zstack_folder").value || "zstack").trim() || "foldername"
+    });
     log("Starting z-stack from " + zStackSettings.start + " to " + zStackSettings.end + " in " + zStackSettings.steps + " steps.");
 }
 
