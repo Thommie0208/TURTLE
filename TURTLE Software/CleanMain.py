@@ -147,7 +147,7 @@ def process_pending_commands():
             reply({"ok": False, "error": "busy", "cmd": cmd})
 
 
-def get_limit(axis):
+def get_limit(axis: str) -> tuple[int, int] | tuple[None, None]:
     if axis == "x":
         return X_MIN, X_MAX
     if axis == "y":
@@ -158,7 +158,7 @@ def get_limit(axis):
     return None, None
 
 
-def limit_steps(axis, requested_steps):
+def limit_steps(axis: str, requested_steps: int) -> int:
     if axis not in stage_position:
         return requested_steps
 
@@ -223,7 +223,7 @@ def tb6612_release(motor):
     motor["pwmb"].duty_u16(0)
 
 
-def move_tb6612(axis, steps, delay_us, power):
+def move_tb6612(axis: str, steps: int, delay_us: int, power: int):
     global stop_requested
 
     motor = tb6612_motors[axis]
@@ -262,7 +262,7 @@ def move_tb6612(axis, steps, delay_us, power):
         "position": stage_position
     })
 
-def jog_tb6612(axis, direction, delay_us, power):
+def jog_tb6612(axis: str, direction: int, delay_us: int, power: int):
     global stop_requested
 
     motor = tb6612_motors[axis]
@@ -293,7 +293,7 @@ def jog_tb6612(axis, direction, delay_us, power):
     tb6612_release(motor)
     reply({"ok": True})
 
-def move_xy(x_steps, y_steps, delay_us, power):
+def move_xy(x_steps: int, y_steps: int, delay_us: int, power: int):
     global stop_requested
 
     x_steps = int(x_steps)
@@ -365,7 +365,7 @@ def move_xy(x_steps, y_steps, delay_us, power):
     })
 
 
-def home_stage(delay_us=2000, power=80):
+def home_stage(delay_us: int = 2000, power: int = 80):
     if stage_position["x"] != 0:
         move_tb6612("x", -stage_position["x"], delay_us, power)
 
@@ -402,7 +402,7 @@ def uln2003_release(motor):
     motor["in4"].value(0)
 
 
-def move_uln2003(axis, steps, delay_us):
+def move_uln2003(axis: str, steps: int, delay_us: int):
     global stop_requested
 
     motor = uln2003_motors[axis]
@@ -432,7 +432,7 @@ def move_uln2003(axis, steps, delay_us):
 
     reply({"ok": True})
 
-def set_servo_angle(angle):
+def set_servo_angle(angle: int):
     angle = int(angle)
 
     if angle < 0:
@@ -465,7 +465,7 @@ def release_all():
         uln2003_release(motor)
 
 
-def handle_command(line):
+def handle_command(line: dict[str, str | int]):
     global stop_requested
 
     data = json.loads(line)

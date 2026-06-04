@@ -170,7 +170,7 @@ def move_filter_to(target_filter, delay_us=FILTER_DELAY_US):
             "sent": command
         }
 
-    current_filter = target_filter
+    current_filter = target_filter # Update the current filter only if the command was sent successfully
 
     return {
         "ok": True,
@@ -209,14 +209,14 @@ def index():
     return render_template_string(HTML_PAGE)
 
 
-@app.route("/api/stepper", methods=["POST"])
+@app.route("/api/stepper", methods=["POST"]) #Move a set amount of steps
 def api_stepper():
-    data = request.json
+    data = request.json # Get the JSON data from the interface postJSON call
 
-    axis = data.get("axis", "x")
-    steps = int(data.get("steps", 100))
-    delay_us = int(data.get("delay_us", 2000))
-    power = int(data.get("power", 70))
+    axis = data.get("axis", "x") # Get the axis to move, default to "x" if not provided
+    steps = int(data.get("steps", 100)) # Get the number of steps to move, default to 100 if not provided. Convert to int for safety.
+    delay_us = int(data.get("delay_us", 1000))
+    power = int(data.get("power", 100))
 
     command = {
         "cmd": "move",
@@ -226,15 +226,15 @@ def api_stepper():
         "power": power
     }
 
-    response = send_to_pico(json.dumps(command))
+    response = send_to_pico(json.dumps(command)) # The response is the Reply function in the Pico code
 
     return jsonify({
         "sent": command,
         "pico_response": response
-    })
+    }) #This is the response that will be visible in the console of the interface for debugging purposes.
 
 
-@app.route("/api/jog", methods=["POST"])
+@app.route("/api/jog", methods=["POST"]) #Moving by holding down a button
 def api_jog():
     data = request.json
 
@@ -259,7 +259,7 @@ def api_jog():
     })
 
 
-@app.route("/api/move_xy", methods=["POST"])
+@app.route("/api/move_xy", methods=["POST"]) #Move an amount of steps in x and y to move diagonally
 def api_move_xy():
     data = request.json
 
@@ -283,7 +283,7 @@ def api_move_xy():
         "pico_response": response
     })
 
-@app.route("/api/state", methods=["GET"])
+@app.route("/api/state", methods=["GET"]) # Get the current position of the stage
 def api_state():
     command = {"cmd": "state"}
     response = send_to_pico(json.dumps(command))
@@ -296,7 +296,7 @@ def api_state():
             "pico_response": response
         })
 
-@app.route("/api/home", methods=["POST"])
+@app.route("/api/home", methods=["POST"]) # Move the stage to the origin (0, 0, 0)
 def api_home():
     data = request.json or {}
 
@@ -316,7 +316,7 @@ def api_home():
         "pico_response": response
     })
 
-@app.route("/api/filter", methods=["POST"])
+@app.route("/api/filter", methods=["POST"]) # Move the filter wheel to a specific filter (1-4)
 def api_filter():
     data = request.json
 
@@ -328,7 +328,7 @@ def api_filter():
     return jsonify(result)
 
 
-@app.route("/api/stop", methods=["POST"])
+@app.route("/api/stop", methods=["POST"]) #Stop the movement of the stage immediately
 def api_stop():
     command = {"cmd": "stop"}
     response = send_to_pico(json.dumps(command))
@@ -339,7 +339,7 @@ def api_stop():
     })
 
 
-@app.route("/api/release", methods=["POST"])
+@app.route("/api/release", methods=["POST"]) #Remove all power from the motors, allowing for manual movement of the stage
 def api_release():
     command = {"cmd": "release"}
     response = send_to_pico(json.dumps(command))
@@ -350,10 +350,10 @@ def api_release():
     })
 
 
-@app.route("/api/servo", methods=["POST"])
+@app.route("/api/servo", methods=["POST"]) #Move the servo to a specific angle (0, 90 or 180)
 def api_servo():
     data = request.json
-    angle = int(data.get("angle", 90))
+    angle = int(data.get("angle", 90)) # Default to 90 degrees if not provided
 
     command = {
         "cmd": "servo",
@@ -368,12 +368,12 @@ def api_servo():
     })
 
 
-@app.route("/api/light", methods=["POST"])
+@app.route("/api/light", methods=["POST"]) #Control the state of the lasers and LED
 def api_light():
     data = request.json
 
     light = data.get("light", "")
-    state = bool(data.get("state", False))
+    state = bool(data.get("state", False)) # Expecting a boolean value for state (True for ON, False for OFF)
 
     if light == "laser1":
         pin = LASER_1_GPIO
@@ -384,16 +384,16 @@ def api_light():
     else:
         return jsonify({"error": "Invalid light source"}), 400
 
-    GPIO.output(pin, GPIO.HIGH if state else GPIO.LOW)
+    GPIO.output(pin, GPIO.HIGH if state else GPIO.LOW) # Set the GPIO pin high or low based on the desired state
 
     return jsonify({
         "light": light,
         "state": "ON" if state else "OFF"
     })
 
-@app.route("/api/livestream", methods=["POST"])
+@app.route("/api/livestream", methods=["POST"]) # Capture a single image for the livestream. The frontend will call this every 0.2 seconds to update the livestream image
 def api_livestream():
-    success = ImageGrabAndSave.capture_single_image(1, "livestream", timeout_ms=200)
+    success = ImageGrabAndSave.capture_single_image(1, "livestream", timeout_ms=200) #Take an image every 0.2s
 
     return jsonify({
         "success": success,
@@ -401,7 +401,7 @@ def api_livestream():
     })
 
 
-@app.route("/api/pictures", methods=["POST"])
+@app.route("/api/pictures", methods=["POST"]) # Capture a single image with the specified output type and filename
 def api_pictures():
     data = request.json
 
@@ -424,7 +424,7 @@ def api_pictures():
     })
     
 
-@app.route("/api/stitch", methods=["POST"])
+@app.route("/api/stitch", methods=["POST"]) # Capture a set of images based on the provided stitching points and stitch them together using the stitch function from Image_Stitcher.py
 def api_stitch():
     data = request.get_json(silent=True) or {}
     data_points: list[dict[str, str]] = data.get("points", []) #Format is list[dict[str, str]], being [timestamp:, x:, y:]
@@ -434,7 +434,7 @@ def api_stitch():
     if not isinstance(data_points, list):
         return jsonify({"error": "Invalid stitching points"}), 400
     if len(data_points) < 3:
-        return jsonify(data_points), 400
+        return jsonify({"error": "Not enough stitching points"}), 400
     
     # Create the folder if it doesn't exist
     if foldername and not os.path.exists(foldername):
@@ -450,18 +450,18 @@ def api_stitch():
 
 
     steps, x_tiles, y_tiles = determine_stitch_square(points, (camera_fov_x, camera_fov_y))
-    total_tiles = 0
+    total_tiles = 0 #Counter used for naming the images
     for i in range(len(steps)):
         send_to_pico(json.dumps(steps[i]))
-        time.sleep(6)
+        time.sleep(6) #Approximate time required for the stage to move
         if steps[i]["steps"] < 0: #This is the command that returns the x to the start to start the next y line
-            time.sleep(2)
+            time.sleep(4) #Approximate time required for the stage to move back
             continue
         total_tiles += 1
         path = os.path.join(foldername, f"{total_tiles}")
         ImageGrabAndSave.capture_single_image(4, path)
-        time.sleep(2)
-    Image_Stitcher.stitch(foldername, (x_tiles, y_tiles), output_type_list[4])
+        time.sleep(2) # Short delay to ensure the image is saved before moving again
+    Image_Stitcher.stitch(foldername, (x_tiles, y_tiles), output_type_list[4]) #Default to png
     return jsonify({
         "ok": True,
         "foldername": foldername,
@@ -473,31 +473,41 @@ def api_stitch():
 
 
 def determine_stitch_square(points: list[float], camera_fov: tuple[float, float]) -> tuple[list[dict[str, str | int]], int, int]:
+    '''
+    Determine the number of tiles in x and y direction based on the provided stitching points and the field of view of the camera, 
+    and return a list of movement commands to move the stage to capture all the required images for stitching. 
+    Args:
+        Points (list[float]): List of stitching points.
+        Camera_fov (tuple[float, float]): Field of view of the camera in x and y directions.
+
+    Returns:
+        Movement commands (tuple[list[dict[str, str | int]], int, int]): List of movement commands, number of tiles in x direction, number of tiles in y direction.
+    '''
     steps: list[dict[str, str | int]] = []
     x1, y1, x2, y2, x3, y3 = points
     top_left: tuple[float, float] = (min(x1, x2, x3), max(y1, y2, y3))
     bottom_right: tuple[float, float] = (max(x1, x2, x3), min(y1, y2, y3))
     normalization_xy: tuple[float, float] = (0 - top_left[0], 0 - top_left[1])
-    top_left = (top_left[0] + normalization_xy[0], top_left[1] + normalization_xy[1])
-    bottom_right = ((bottom_right[0] + normalization_xy[0]), -(bottom_right[1] + normalization_xy[1]))
+    top_left = (top_left[0] + normalization_xy[0], top_left[1] + normalization_xy[1]) # Normalize the coordinates so that the top left is at (0,0)
+    bottom_right = ((bottom_right[0] + normalization_xy[0]), -(bottom_right[1] + normalization_xy[1])) # Invert the y coordinates so that they are in the same orientation as the stage movement commands (positive y is downwards)
     
-    tiles_in_x = int((bottom_right[0] - top_left[0]) / (camera_fov[0] * (1 - required_overlap))) + 1
-    tiles_in_y = int((bottom_right[1] - top_left[1]) / (camera_fov[1] * (1 - required_overlap))) + 1
+    tiles_in_x = int((bottom_right[0] - top_left[0]) // (camera_fov[0] * (1 - required_overlap))) + 1 # Distance divided by effective field of view, +1 to account for remainder
+    tiles_in_y = int((bottom_right[1] - top_left[1]) // (camera_fov[1] * (1 - required_overlap))) + 1
     print(f"tiles in x: {tiles_in_x}, tiles in y: {tiles_in_y}")
     stepsize = 1/2048 * 1000 #micro m
-    y = camera_fov[1] * (1 - required_overlap)
+    y = camera_fov[1] * (1 - required_overlap) #Starts at the first tile distance so the end bound can be inclusive 
     x = camera_fov[0] * (1 - required_overlap)
-    while y <= bottom_right[1]:
+    while y <= bottom_right[1]: # Loop over y to move down after the x loop, which moves right
         steps_in_direction = 0
-        if steps:
+        if steps: #The first step should not move the stage, so only calculate steps if there are already steps in the list. This is because before the first step is taken, an image needs to be made
             steps_in_direction = int(camera_fov[1]* (1 - required_overlap)/stepsize)
             y += steps_in_direction * stepsize
         steps.append({
         "cmd": "move",
         "axis": "y",
         "steps": steps_in_direction,
-        "delay_us": 2000,
-        "power": 70})
+        "delay_us": 1000,
+        "power": 100})
         steps_in_x = 0
         while x <= bottom_right[0]:
             steps_in_direction = int(camera_fov[0]* (1 - required_overlap)/stepsize)
@@ -506,19 +516,19 @@ def determine_stitch_square(points: list[float], camera_fov: tuple[float, float]
             "cmd": "move",
             "axis": "x",
             "steps": steps_in_direction,
-            "delay_us": 2000,
-            "power": 70
+            "delay_us": 1000,
+            "power": 100
             })
             steps_in_x += steps_in_direction
         steps.append({
             "cmd": "move",
             "axis": "x",
             "steps": -steps_in_x,
-            "delay_us": 2000,
-            "power": 70
-            })
+            "delay_us": 1000,
+            "power": 100
+            }) #Once the x loop is done, move back to the start of the next line by moving x back by the amount of steps taken in x
         steps_in_x = 0
-        x = camera_fov[0] * (1 - required_overlap)
+        x = camera_fov[0] * (1 - required_overlap) #Reset x to the first tile distance for the next line
     return steps, tiles_in_x, tiles_in_y
 
 @app.route("/api/stack", methods=["POST"])
@@ -542,8 +552,8 @@ def api_stack():
             "cmd": "move",
             "axis": "z",
             "steps": steps_in_direction,
-            "delay_us": 2000,
-            "power": 70
+            "delay_us": 1000,
+            "power": 100
             })
         
     sleeptime = (((z_end - z_start)/z_steps) * 45) / 10000 # Based on the measurement of 1 cm taking 45 seconds.
@@ -576,8 +586,8 @@ if __name__ == "__main__":
             print("Returning stage to origin...")
             command = {
                 "cmd": "home",
-                "delay_us": 2000,
-                "power": 80
+                "delay_us": 1000,
+                "power": 100
             }
             send_to_pico(json.dumps(command))
         except Exception as e:
