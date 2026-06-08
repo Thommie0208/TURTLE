@@ -406,7 +406,7 @@ def api_pictures():
     data = request.json
 
     filename = data.get("filename", "")
-    output_type = data.get("output_type", "PNG")
+    output_type = data.get("output_type", "raw")
 
     output_type_list = ["raw", "JPEG", "BMP", "TIFF", "PNG"]
 
@@ -459,7 +459,7 @@ def api_stitch():
             continue
         total_tiles += 1
         path = os.path.join(foldername, f"{total_tiles}")
-        ImageGrabAndSave.capture_single_image(4, path)
+        ImageGrabAndSave.capture_single_image(0, path)
         time.sleep(2) # Short delay to ensure the image is saved before moving again
     Image_Stitcher.stitch(foldername, (x_tiles, y_tiles), output_type_list[4]) #Default to png
     return jsonify({
@@ -557,11 +557,11 @@ def api_stack():
             })
         
     sleeptime = (((z_end - z_start)/z_steps) * 45) / 10000 # Based on the measurement of 1 cm taking 45 seconds.
-    for i, step in enumerate(steps):
+    for z, step in zip(z_list, steps):
         send_to_pico(json.dumps(step))
         time.sleep(sleeptime)
-        path = os.path.join(foldername, f"{i}")
-        ImageGrabAndSave.capture_single_image(4, path)
+        path = os.path.join(foldername, f"{z:.2f}")
+        ImageGrabAndSave.capture_single_image(0, path)
         time.sleep(2)
 
     return jsonify({
