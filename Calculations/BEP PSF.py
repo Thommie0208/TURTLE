@@ -7,8 +7,8 @@ import microscPSF.microscPSF as msPSF
 print(f'packages are imported')
 
 # Microscope parameters.
-m_params = {"M" : 10,                   # magnification
-            "NA" : 0.3,                # numerical aperture
+m_params = {"M" : 200/18,                   # magnification
+            "NA" : 0.3,                 # numerical aperture
             "ng0" : 1.52,               # coverslip RI design value
             "ng" : 1.52,                # coverslip RI experimental value
             "ni0" : 1,                  # immersion medium RI design value    medium between coverslip and objective
@@ -18,7 +18,8 @@ m_params = {"M" : 10,                   # magnification
             "tg" : 170,                 # microns, coverslip thickness experimental value
             "tg0" : 170,                # microns, coverslip thickness design value
             "zd0" : 200 * 1.0e+3,       # microscope tube length (in microns)
-            "pixel_camera" : 2.4}       #pixel size of the camera.
+            "pixel_camera" : 2.4}       #pixel size of the camera  
+
 
 # You can find more information about what these are in this file:
 # print(inspect.getfile(msPSF))
@@ -118,4 +119,4 @@ pyplot.xlabel(f'x, micrometer')
 pyplot.xticks(np.arange(-5, 6, 1))
 pyplot.show
 
-print(f'FWHM = {FWHM}')
+print(f'FWHM = {FWHM} micrometer')
