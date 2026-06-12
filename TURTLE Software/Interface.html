@@ -40,8 +40,8 @@
         position: absolute;
         right: 16px;
         top: 10px;
-        width: clamp(64px, 13vh, 110px);
-        height: clamp(64px, 13vh, 110px);
+        width: clamp(40px, 9vh, 75px);
+        height: clamp(40px, 9vh, 75px);
         object-fit: contain;
     }
 
@@ -726,7 +726,7 @@
 
                     <div class="row">
                         <label>Delay us:</label>
-                        <input id="delay_us" type="number" value="2000">
+                        <input id="delay_us" type="number" value="1500">
                     </div>
 
                     <div class="row">
@@ -750,7 +750,7 @@
 
                     <div class="row">
                         <label>Delay us:</label>
-                        <input id="xy_delay_us" type="number" value="2000">
+                        <input id="xy_delay_us" type="number" value="1500">
                     </div>
 
                     <div class="row">
@@ -1016,6 +1016,7 @@ async function postJSON(url, data) {
 }
 
 let jogActive = false;
+let jogReleaseHandler = null;
 
 function startJog(axis, direction) {
     if (jogActive) {
@@ -1023,6 +1024,11 @@ function startJog(axis, direction) {
     }
 
     jogActive = true;
+
+    jogReleaseHandler = () => stopJog();
+    window.addEventListener("mouseup", jogReleaseHandler);
+    window.addEventListener("touchend", jogReleaseHandler);
+    window.addEventListener("touchcancel", jogReleaseHandler);
 
     const delay_us = parseInt(document.getElementById("delay_us").value);
     const power = parseInt(document.getElementById("power").value);
@@ -1036,6 +1042,13 @@ function startJog(axis, direction) {
 }
 
 function stopJog() {
+    if (jogReleaseHandler) {
+        window.removeEventListener("mouseup", jogReleaseHandler);
+        window.removeEventListener("touchend", jogReleaseHandler);
+        window.removeEventListener("touchcancel", jogReleaseHandler);
+        jogReleaseHandler = null;
+    }
+
     if (!jogActive) {
         return;
     }
@@ -1262,9 +1275,12 @@ function setZSteps() {
 }
 
 function startZStack() {
-    setZStart();
-    setZEnd();
-    setZSteps();
+    postJSON("/api/stack", {
+        start: zStackSettings.start,
+        end: zStackSettings.end,
+        steps: zStackSettings.steps,
+        foldername: (document.getElementById("zstack_folder").value || "zstack").trim() || "foldername"
+    });
     log("Starting z-stack from " + zStackSettings.start + " to " + zStackSettings.end + " in " + zStackSettings.steps + " steps.");
 }
 

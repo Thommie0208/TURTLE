@@ -98,7 +98,7 @@ def decoding_char(ctypes_char_array):
     
     return byte_str.decode('latin-1', errors='replace')
 
-def save_non_raw_image(save_type, frame_info, cam_instance, custom_filename=None):
+def save_non_raw_image(save_type: int, frame_info: MV_FRAME_OUT, cam_instance: MvCamera, custom_filename: str | None = None) -> tuple[int, str | None]:
     """
     Save image in non-raw format (JPEG, BMP, TIFF, PNG)
     From ImageSave.py
@@ -152,7 +152,7 @@ def save_non_raw_image(save_type, frame_info, cam_instance, custom_filename=None
     mv_ret = cam_instance.MV_CC_SaveImageToFileEx(stSaveParam)
     return mv_ret, file_path
 
-def save_raw(frame_info, cam_instance, custom_filename=None):
+def save_raw(frame_info: MV_FRAME_OUT, cam_instance: MvCamera, custom_filename: str | None = None) -> tuple[int, str | None]:
     """
     Save raw image data (with HB decode if needed)
     From ImageSave.py
@@ -233,7 +233,7 @@ def save_raw(frame_info, cam_instance, custom_filename=None):
             print("Save raw file failed: %s" % str(e))
             return MV_E_OPENFILE, None
 
-def convert_to_opencv(frame_info):
+def convert_to_opencv(frame_info: MV_FRAME_OUT) -> np.ndarray | None:
     """
     Convert MVS frame to OpenCV format for display
     
@@ -340,7 +340,7 @@ def work_thread(cam=0, pData=0, nDataSize=0):
         #     # No data, just continue
         #     pass
 
-def capture_and_save(cam, save_type, custom_filename=None, timeout_ms=2000) -> tuple[bool, str | None]:
+def capture_and_save(cam: MvCamera, save_type: int, custom_filename: str | None = None, timeout_ms: int = 2000) -> tuple[bool, str | None]:
     """
     Capture a single frame and save it
     
@@ -389,7 +389,7 @@ def capture_and_save(cam, save_type, custom_filename=None, timeout_ms=2000) -> t
         print("Capture error: %s" % str(e))
         return False, None
 
-def capture_single_image(save_type=1, filename=None, camera_index=0, timeout_ms=2000) -> bool:
+def capture_single_image(save_type: int = 1, filename: str | None = None, camera_index: int = 0, timeout_ms: int = 2000) -> bool:
     """
     Simplified function to capture a single image (connect, capture, disconnect)
     

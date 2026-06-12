@@ -2,9 +2,15 @@ import os
 import glob
 import cv2
 from stitch2d import StructuredMosaic
-def stitch(path, tiles, extension):
-    
-    # change only this block
+
+def stitch(path: str, tiles: tuple[int, int], extension: str) -> None:
+    '''
+    Stitch a set of images together based on the provided path, number of tiles in x and y direction, and file extension.
+    Args:
+    path (str): Path to the folder containing the images to be stitched.
+    tiles (tuple[int, int]): Number of tiles in x and y direction (tiles_x, tiles_y).
+    extension (str): File extension of the images to be stitched (e.g. "jpg", "png").
+    '''
     folder = path
 
     tiles_x, tiles_y = tiles
