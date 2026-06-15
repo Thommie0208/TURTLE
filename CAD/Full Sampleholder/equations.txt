@@ -1,0 +1,8 @@
+﻿"Width"= 76mm
+"Height"= 50mm
+"SpringD"= 5
+"D1@Sketch1"="Height"
+"D2@Sketch1"="Width"/2
+"DovetailAngle" = 60deg
+"DovetailHeight" = 7mm
+"DovetailBase" = 7mm
