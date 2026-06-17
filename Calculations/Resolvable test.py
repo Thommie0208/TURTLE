@@ -43,7 +43,7 @@ def find_ending_value(pixels: list[float]) -> int:
     return -1
 
 def find_ratio(minimums: list[float], maximums: list[float]) -> bool:
-    valid_ratio = False
+    valid_ratio = True
     # print(minimums, maximums)
     if len(maximums) < 2 or len(minimums) < 3:
         return False
@@ -60,9 +60,9 @@ def find_ratio(minimums: list[float], maximums: list[float]) -> bool:
         ratio = (maximum - minimum)/maximum
         # print(ratio)
         if ratio > criteria:
-            valid_ratio = True
-        else:
             pass
+        else:
+            valid_ratio = False
     return valid_ratio
 
 
@@ -78,10 +78,14 @@ for sample in range(1, 6):
     group9_elem2_vert = readfile(os.path.join(base_dir, f"USAF test map\\Sample {sample}\\Group 9 Element 2 (vert).csv"))
 
     groups = [group8_elem5_hor, group8_elem5_vert, group8_elem6_hor, group8_elem6_vert, group9_elem1_hor, group9_elem1_vert, group9_elem2_hor, group9_elem2_vert]
+    resolvable: list[bool] = []
     for group in groups:
+        # print(f"Group {groups.index(group)}")
         mini, maxi = find_min_max(group)
-        if find_ratio(mini, maxi):
-            print(f"Sample {sample} is resolvable for group {groups.index(group)}")
+        resolvable.append(find_ratio(mini, maxi))
+    for i in range(0, len(resolvable), 2):    
+        if resolvable[i] and resolvable[i + 1]:
+            print(f"Sample {sample} is resolvable for group {i}")
         else:
-            print(f"Sample {sample} is NOT resolvable for group {groups.index(group)}")
+            print(f"Sample {sample} is NOT resolvable for group {i}")
     print("")
