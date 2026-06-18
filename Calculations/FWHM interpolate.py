@@ -1,5 +1,7 @@
 import numpy as np
+import os
 
+base_dir = os.path.dirname(__file__)
 grey_value = 86
 
 def find_pixel(filename: str) -> str:
@@ -30,4 +32,4 @@ def interpolate(x1: int, x2: int, y1: float, y2: float) -> float:
     rc = (x2 - x1)/(y2 - y1)
     return rc * (grey_value - y1) + x1
 
-print(find_pixel(r"C:\Users\Luuk\Documents\Bachelor WB\Jaar 3 (2025-26)\BEP - A Field-Ready Portable Microscope\Images\USAF test map\Sample 5\Group 6 Element 1 (vert).csv"))
+print(find_pixel(os.path.join(base_dir, f"USAF test map\\Sample 5\\Group 6 Element 1 (vert).csv")))
