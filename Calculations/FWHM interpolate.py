@@ -1,8 +1,8 @@
 import numpy as np
 
-grey_value = 93
+grey_value = 86
 
-def find_pixel(filename: str) -> float:
+def find_pixel(filename: str) -> str:
     higher_than_grey = True
     pixel_list: list[float] = [] #Pixel index is list index
     pixels_at_grey: list[float] = []
@@ -21,11 +21,13 @@ def find_pixel(filename: str) -> float:
             pixels_at_grey.append(interpolate((i - 1), i, pixel_list[i - 1], pixel_list[i]))
             higher_than_grey = True
     for j in range(1, len(pixels_at_grey), 2):
-        distances.append(pixels_at_grey[j] - pixels_at_grey[j -1])
-    return float(np.mean(np.array(distances)))
+        diff = pixels_at_grey[j] - pixels_at_grey[j -1]
+        distances.append(diff)
+        print(f"{diff:.4f}")
+    return f"{(np.mean(np.array(distances))):.2f}"
 
 def interpolate(x1: int, x2: int, y1: float, y2: float) -> float:
     rc = (x2 - x1)/(y2 - y1)
     return rc * (grey_value - y1) + x1
 
-print(find_pixel(r"C:\Users\name\Downloads\Group 6 Element 1 (hor).csv"))
+print(find_pixel(r"C:\Users\Luuk\Documents\Bachelor WB\Jaar 3 (2025-26)\BEP - A Field-Ready Portable Microscope\Images\USAF test map\Sample 5\Group 6 Element 1 (vert).csv"))
