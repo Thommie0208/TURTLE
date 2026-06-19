@@ -11,9 +11,9 @@ pixles = np.array([3072, 2048])     #... - The resolution of the camera as in ..
 pixle_size = 2.4                  #micrometer - The pixle size of the camera (4.8)(3.45)(lab: 3.45, IDS: UI-3070CP Rev. 2)(UC2: 2.4, hikrobot: mv-cs060-10uc-pro)
 
 #lenses
-M_obj = 4          #... - Magnification of the objective (4)(10)
-NA_obj = 0.13       #... - Numerical aperature of the objective (0.13)(0.3)
-WD_obj = 17         #mm - Working distance of the objective (17)(9)
+M_obj = 10          #... - Magnification of the objective (4)(10)
+NA_obj = 0.3       #... - Numerical aperature of the objective (0.13)(0.3)
+WD_obj = 9         #mm - Working distance of the objective (17)(9)
 f_tube_corr = 180   #mm - Focal length of the corresponding tube lens (the tube lens from the same company as the objective)
 f_imaging = 200     #mm - Effective focal length of the imaging lens (most commonly an achromatic doublet or a tube lens)
 d_imaging = 25      #mm - Diameter of the imaging lens (most commonly an achromatic doublet or a tube lens)
