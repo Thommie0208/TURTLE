@@ -459,7 +459,7 @@ def api_stitch():
             continue
         total_tiles += 1
         path = os.path.join(foldername, f"{total_tiles}")
-        ImageGrabAndSave.capture_single_image(0, path)
+        ImageGrabAndSave.capture_single_image(4, path)
         time.sleep(2) # Short delay to ensure the image is saved before moving again
     Image_Stitcher.stitch(foldername, (x_tiles, y_tiles), output_type_list[4]) #Default to png
     return jsonify({

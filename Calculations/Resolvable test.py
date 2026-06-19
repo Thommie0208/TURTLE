@@ -67,7 +67,7 @@ def find_ratio(minimums: list[float], maximums: list[float]) -> bool:
 
 
 criteria = 0.263
-for sample in range(1, 6):
+for sample in range(1, 6): #Relies on a highly specific file structure where the USAF test map is in the same folder as this script
     group8_elem5_hor = readfile(os.path.join(base_dir, f"USAF test map\\Sample {sample}\\Group 8 Element 5 (hor).csv"))
     group8_elem5_vert = readfile(os.path.join(base_dir, f"USAF test map\\Sample {sample}\\Group 8 Element 5 (vert).csv"))
     group8_elem6_hor = readfile(os.path.join(base_dir, f"USAF test map\\Sample {sample}\\Group 8 Element 6 (hor).csv"))

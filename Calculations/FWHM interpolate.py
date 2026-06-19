@@ -32,4 +32,4 @@ def interpolate(x1: int, x2: int, y1: float, y2: float) -> float:
     rc = (x2 - x1)/(y2 - y1)
     return rc * (grey_value - y1) + x1
 
-print(find_pixel(os.path.join(base_dir, f"USAF test map\\Sample 5\\Group 6 Element 1 (vert).csv")))
+print(find_pixel(os.path.join(base_dir, f"USAF test map\\Sample 5\\Group 6 Element 1 (vert).csv"))) #Relies on a highly specific file structure where the USAF test map is in the same folder as this script
